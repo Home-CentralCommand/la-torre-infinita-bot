@@ -79,7 +79,7 @@ monstruos = [
 ]
 
 jefes = [
-    {"nombre": "Señor de las Sombras", "emoji": "👑", "vida": 120, "daño": 25, "oro": 80, "xp": 35, "imagen": "señor_de_las_sombras.jpg"},
+    {"nombre": "Señor de las Sombras", "emoji": "👑", "vida": 120, "daño": 25, "oro": 80, "xp": 35, "imagen": "senor_de_las_sombras.jpg"},
 ]
 
 # ---------- INICIALIZACIÓN ----------
