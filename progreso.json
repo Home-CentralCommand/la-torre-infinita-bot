@@ -31,14 +31,14 @@
     "arma_da\u00f1o": 10,
     "pociones": 1,
     "partida": {
-      "vida": 55,
+      "vida": 47,
       "piso": 1,
       "arma_da\u00f1o": 10,
       "pociones": 0,
       "monstruo_actual": {
         "nombre": "Orco Salvaje",
         "emoji": "\ud83e\uddcc",
-        "vida": 30,
+        "vida": 0,
         "da\u00f1o": 8,
         "oro": 15,
         "xp": 8
