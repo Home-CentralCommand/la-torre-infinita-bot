@@ -15,6 +15,13 @@
     "experiencia": 0,
     "piso_actual": 1,
     "arma_da\u00f1o": 10,
-    "pociones": 1
+    "pociones": 1,
+    "partida": {
+      "vida": 100,
+      "piso": 1,
+      "arma_da\u00f1o": 10,
+      "pociones": 1,
+      "monstruo_actual": null
+    }
   }
 }
