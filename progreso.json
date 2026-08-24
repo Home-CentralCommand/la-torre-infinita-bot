@@ -31,14 +31,14 @@
     "arma_da\u00f1o": 10,
     "pociones": 1,
     "partida": {
-      "vida": 65,
+      "vida": 43,
       "piso": 1,
       "arma_da\u00f1o": 10,
       "pociones": 1,
       "monstruo_actual": {
         "nombre": "Liche Maligno",
         "emoji": "\ud83e\ude84",
-        "vida": 90,
+        "vida": 80,
         "da\u00f1o": 22,
         "oro": 55,
         "xp": 22
