@@ -31,10 +31,10 @@
     "arma_da\u00f1o": 10,
     "pociones": 1,
     "partida": {
-      "vida": 20,
+      "vida": 70,
       "piso": 1,
       "arma_da\u00f1o": 10,
-      "pociones": 1,
+      "pociones": 0,
       "monstruo_actual": {
         "nombre": "Alma Errante",
         "emoji": "\ud83e\udddf",
