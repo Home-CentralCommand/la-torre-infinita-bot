@@ -1,29 +1,6 @@
 {
   "8468237643": {
     "nombre": "\ud835\udde2\ud835\udde6\ud835\uddde\ud835\udde8 - \ud835\udde8\ud835\uddf9\ud835\ude01\ud835\uddff\ud835\uddee \ud835\udddc\ud835\uddfb\ud835\ude00\ud835\ude01\ud835\uddf6\ud835\uddfb\ud835\ude01\ud835\uddfc",
-    "oro": 15,
-    "piso_maximo": 0,
-    "experiencia": 8,
-    "piso_actual": 2,
-    "arma_da\u00f1o": 10,
-    "pociones": 1,
-    "partida": {
-      "vida": 57,
-      "piso": 2,
-      "arma_da\u00f1o": 10,
-      "pociones": 0,
-      "monstruo_actual": {
-        "nombre": "Caballero Ca\u00eddo",
-        "emoji": "\u2694\ufe0f",
-        "vida": 70,
-        "da\u00f1o": 18,
-        "oro": 40,
-        "xp": 18
-      }
-    }
-  },
-  "8468237643": {
-    "nombre": "\ud835\udde2\ud835\udde6\ud835\uddde\ud835\udde8 - \ud835\udde8\ud835\uddf9\ud835\ude01\ud835\uddff\ud835\uddee \ud835\udddc\ud835\uddfb\ud835\ude00\ud835\ude01\ud835\uddf6\ud835\uddfb\ud835\ude01\ud835\uddfc",
     "oro": 0,
     "piso_maximo": 0,
     "experiencia": 0,
@@ -37,5 +14,15 @@
       "pociones": 1,
       "monstruo_actual": null
     }
+  },
+  "8468237643": {
+    "nombre": "\ud835\udde2\ud835\udde6\ud835\uddde\ud835\udde8 - \ud835\udde8\ud835\uddf9\ud835\ude01\ud835\uddff\ud835\uddee \ud835\udddc\ud835\uddfb\ud835\ude00\ud835\ude01\ud835\uddf6\ud835\uddfb\ud835\ude01\ud835\uddfc",
+    "oro": 0,
+    "piso_maximo": 0,
+    "experiencia": 0,
+    "piso_actual": 1,
+    "arma_da\u00f1o": 10,
+    "pociones": 1,
+    "partida": null
   }
 }
