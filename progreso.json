@@ -8,14 +8,14 @@
     "arma_da\u00f1o": 10,
     "pociones": 1,
     "partida": {
-      "vida": 100,
+      "vida": 95,
       "piso": 1,
       "arma_da\u00f1o": 10,
       "pociones": 1,
       "monstruo_actual": {
         "nombre": "Alma Errante",
         "emoji": "\ud83e\udddf",
-        "vida": 20,
+        "vida": 10,
         "da\u00f1o": 5,
         "oro": 10,
         "xp": 5
