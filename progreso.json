@@ -36,12 +36,12 @@
       "arma_da\u00f1o": 10,
       "pociones": 0,
       "monstruo_actual": {
-        "nombre": "Wyrm Sombr\u00edo",
-        "emoji": "\ud83d\udc09",
-        "vida": 45,
-        "da\u00f1o": 15,
-        "oro": 30,
-        "xp": 15
+        "nombre": "Orco Salvaje",
+        "emoji": "\ud83e\uddcc",
+        "vida": 30,
+        "da\u00f1o": 8,
+        "oro": 15,
+        "xp": 8
       }
     }
   }
