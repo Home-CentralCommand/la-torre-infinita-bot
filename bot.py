@@ -27,9 +27,10 @@ def github_get(file_path):
         if r.status_code == 200:
             content = base64.b64decode(r.json()["content"]).decode()
             return content
-        except:
-            pass
-    return None
+        else:
+            return None
+    except:
+        return None
 
 def github_put(file_path, content):
     if not GITHUB_TOKEN: return
@@ -99,9 +100,8 @@ def iniciar_torre(message):
             "oro": 0,
             "piso_maximo": 0,
             "experiencia": 0,
-            "vida": 100,
             "piso_actual": 1,
-            "arma": "Daga de Madera",
+            "arma_daño": 10,
             "pociones": 1
         }
         guardar_progreso()
@@ -154,7 +154,6 @@ def ver_guia(call):
 @bot.callback_query_handler(func=lambda call: call.data == "iniciar_aventura")
 def iniciar_aventura(call):
     bot.answer_callback_query(call.id)
-    chat_id = call.message.chat.id
     user_id = call.from_user.id
     
     if user_id not in partidas:
@@ -186,7 +185,7 @@ def mostrar_piso(message, user_id):
         f"{monstruo['emoji']} 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['nombre']}\n"
         f"❤️ 𝗩𝗜𝗗𝗔 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['vida']}\n\n"
         f"❤️ 𝗧𝗨 𝗩𝗜𝗗𝗔: {partida['vida']}\n"
-        f"⚔️ 𝗧𝗨 𝗗𝗔𝗡𝗢: {partida['arma_daño']}\n"
+        f"⚔️ 𝗧𝗨 𝗗𝗔Ñ𝗢: {partida['arma_daño']}\n"
         f"💊 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}",
         reply_markup=markup
     )
