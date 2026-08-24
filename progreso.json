@@ -36,12 +36,12 @@
       "arma_da\u00f1o": 10,
       "pociones": 0,
       "monstruo_actual": {
-        "nombre": "Alma Errante",
-        "emoji": "\ud83e\udddf",
-        "vida": 20,
-        "da\u00f1o": 5,
-        "oro": 10,
-        "xp": 5
+        "nombre": "Wyrm Sombr\u00edo",
+        "emoji": "\ud83d\udc09",
+        "vida": 55,
+        "da\u00f1o": 15,
+        "oro": 30,
+        "xp": 15
       }
     }
   }
