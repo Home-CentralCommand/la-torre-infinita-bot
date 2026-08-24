@@ -31,14 +31,14 @@
     "arma_da\u00f1o": 10,
     "pociones": 1,
     "partida": {
-      "vida": 77,
+      "vida": 65,
       "piso": 1,
       "arma_da\u00f1o": 10,
       "pociones": 1,
       "monstruo_actual": {
         "nombre": "Demonio Menor",
         "emoji": "\ud83d\udc79",
-        "vida": 40,
+        "vida": 30,
         "da\u00f1o": 12,
         "oro": 20,
         "xp": 12
