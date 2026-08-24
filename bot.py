@@ -23,7 +23,7 @@ def github_get(file_path):
     url = f"https://api.github.com/repos/{REPO}/contents/{file_path}"
     headers = {"Authorization": f"token {GITHUB_TOKEN}"}
     try:
-        r = requests.get(url, headers=headers)
+        r = requests.get(url, headers=headers, timeout=5)
         if r.status_code == 200:
             content = base64.b64decode(r.json()["content"]).decode()
             return content
@@ -38,7 +38,7 @@ def github_put(file_path, content):
     headers = {"Authorization": f"token {GITHUB_TOKEN}"}
     sha = None
     try:
-        r = requests.get(url, headers=headers)
+        r = requests.get(url, headers=headers, timeout=5)
         if r.status_code == 200:
             sha = r.json().get("sha")
     except:
@@ -47,7 +47,10 @@ def github_put(file_path, content):
     body = {"message": f"Update {file_path}", "content": encoded}
     if sha:
         body["sha"] = sha
-    requests.put(url, headers=headers, json=body)
+    try:
+        requests.put(url, headers=headers, json=body, timeout=5)
+    except:
+        pass
 
 def cargar_progreso():
     data = github_get(FILE_PATH_PROGRESS)
@@ -105,21 +108,15 @@ def iniciar_torre(message):
             "piso_actual": 1,
             "arma_daño": 10,
             "pociones": 1,
-            "partida": {
-                "vida": 100,
-                "piso": 1,
-                "arma_daño": 10,
-                "pociones": 1,
-                "monstruo_actual": None
-            }
+            "partida": None  # partida activa, inicialmente ninguna
         }
         guardar_progreso()
     else:
-        # Si ya existe, reiniciamos la partida activa
+        # Reiniciar la partida activa (si existe se sobrescribe)
         progreso[user_id]["partida"] = {
             "vida": 100,
             "piso": 1,
-            "arma_daño": 10,
+            "arma_daño": progreso[user_id].get("arma_daño", 10),
             "pociones": progreso[user_id].get("pociones", 1),
             "monstruo_actual": None
         }
@@ -175,35 +172,27 @@ def iniciar_aventura(call):
     bot.answer_callback_query(call.id)
     user_id = call.from_user.id
 
-    if user_id not in progreso:
+    if user_id not in progreso or not progreso[user_id].get("partida"):
         bot.send_message(call.message.chat.id, "❌ 𝗡𝗢 𝗛𝗔𝗬 𝗣𝗔𝗥𝗧𝗜𝗗𝗔 𝗔𝗖𝗧𝗜𝗩𝗔")
         return
-
-    partida = progreso[user_id].get("partida")
-    if not partida:
-        partida = {
-            "vida": 100,
-            "piso": 1,
-            "arma_daño": 10,
-            "pociones": progreso[user_id].get("pociones", 1),
-            "monstruo_actual": None
-        }
-        progreso[user_id]["partida"] = partida
-        guardar_progreso()
 
     mostrar_piso(call.message, user_id)
 
 def mostrar_piso(message, user_id):
     partida = progreso[user_id]["partida"]
-    piso = partida["piso"]
 
-    if piso % 10 == 0:
-        monstruo = jefes[0].copy()
+    # Si no hay monstruo actual o murió, generamos uno nuevo
+    if not partida.get("monstruo_actual") or partida["monstruo_actual"]["vida"] <= 0:
+        piso = partida["piso"]
+        if piso % 10 == 0:
+            monstruo = jefes[0].copy()
+        else:
+            monstruo = random.choice(monstruos).copy()
+        partida["monstruo_actual"] = monstruo
     else:
-        monstruo = random.choice(monstruos).copy()
+        monstruo = partida["monstruo_actual"]
 
-    partida["monstruo_actual"] = monstruo
-    guardar_progreso()
+    piso = partida["piso"]
 
     markup = InlineKeyboardMarkup(row_width=1)
     markup.add(
@@ -230,17 +219,18 @@ def accion_batalla(call):
     chat_id = call.message.chat.id
     user_id = call.from_user.id
 
-    if user_id not in progreso or "partida" not in progreso[user_id]:
+    if user_id not in progreso or not progreso[user_id].get("partida"):
         bot.send_message(chat_id, "❌ 𝗡𝗢 𝗛𝗔𝗬 𝗣𝗔𝗥𝗧𝗜𝗗𝗔 𝗔𝗖𝗧𝗜𝗩𝗔")
         return
 
     partida = progreso[user_id]["partida"]
-    monstruo = partida["monstruo_actual"]
+    monstruo = partida.get("monstruo_actual")
     if monstruo is None:
         bot.send_message(chat_id, "❌ 𝗡𝗢 𝗛𝗔𝗬 𝗣𝗔𝗥𝗧𝗜𝗗𝗔 𝗔𝗖𝗧𝗜𝗩𝗔")
         return
 
     accion = call.data
+    resultado = ""
 
     if accion == "accion_atacar":
         daño = partida["arma_daño"]
@@ -276,30 +266,37 @@ def accion_batalla(call):
         else:
             resultado = "❌ 𝗡𝗢 𝗧𝗜𝗘𝗡𝗘𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦"
 
-    # Guardar cambios
+    # Actualizar la partida en el diccionario global
+    progreso[user_id]["partida"] = partida
     guardar_progreso()
 
+    # Verificar muerte del jugador
     if partida["vida"] <= 0:
         bot.send_message(chat_id,
             "💀 𝗖𝗔𝗜𝗦𝗧𝗘\n\n"
             f"Moriste en el piso {partida['piso']}.\n"
             f"Experiencia ganada: {partida['piso'] * 2}"
         )
-        progreso[user_id]["piso_maximo"] = max(progreso[user_id]["piso_maximo"], partida["piso"])
+        # Actualizar progreso permanente
+        progreso[user_id]["piso_maximo"] = max(progreso[user_id].get("piso_maximo", 0), partida["piso"])
         progreso[user_id]["experiencia"] += partida["piso"] * 2
-        # Limpiar partida activa
-        progreso[user_id].pop("partida", None)
+        # Eliminar partida activa
+        progreso[user_id]["partida"] = None
         guardar_progreso()
         return
 
+    # Verificar muerte del monstruo
     if monstruo["vida"] <= 0:
         oro_ganado = monstruo["oro"]
         xp_ganada = monstruo["xp"]
         progreso[user_id]["oro"] += oro_ganado
         progreso[user_id]["experiencia"] += xp_ganada
         partida["piso"] += 1
-        partida["vida"] = min(partida["vida"] + 10, 100)  # Pequeña regeneración al subir de piso
+        partida["vida"] = min(partida["vida"] + 10, 100)  # Regeneración
         progreso[user_id]["piso_actual"] = partida["piso"]
+        # Limpiar monstruo_actual para generar uno nuevo
+        partida["monstruo_actual"] = None
+        progreso[user_id]["partida"] = partida
         guardar_progreso()
 
         bot.send_message(chat_id,
@@ -311,6 +308,7 @@ def accion_batalla(call):
         mostrar_piso(call.message, user_id)
         return
 
+    # Si nadie muere, mostrar estado actual y continuar batalla
     bot.send_message(chat_id,
         f"{resultado}\n\n"
         f"❤️ 𝗧𝗨 𝗩𝗜𝗗𝗔: {partida['vida']}\n"
@@ -334,9 +332,9 @@ def mi_progreso(message):
     bot.reply_to(message,
         f"📊 𝗧𝗨 𝗣𝗥𝗢𝗚𝗥𝗘𝗦𝗢\n\n"
         f"👤 𝗡𝗢𝗠𝗕𝗥𝗘: {p['nombre']}\n"
-        f"🗼 𝗣𝗜𝗦𝗢 𝗠𝗔𝗫𝗜𝗠𝗢: {p['piso_maximo']}\n"
-        f"🪙 𝗢𝗥𝗢: {p['oro']}\n"
-        f"⭐ 𝗘𝗫𝗣𝗘𝗥𝗜𝗘𝗡𝗖𝗜𝗔: {p['experiencia']}"
+        f"🗼 𝗣𝗜𝗦𝗢 𝗠𝗔𝗫𝗜𝗠𝗢: {p.get('piso_maximo', 0)}\n"
+        f"🪙 𝗢𝗥𝗢: {p.get('oro', 0)}\n"
+        f"⭐ 𝗘𝗫𝗣𝗘𝗥𝗜𝗘𝗡𝗖𝗜𝗔: {p.get('experiencia', 0)}"
     )
 
 # ---------- COMANDO /rank ----------
@@ -350,11 +348,11 @@ def ranking(message):
         bot.reply_to(message, "📊 𝗔𝗨𝗡 𝗡𝗢 𝗛𝗔𝗬 𝗝𝗨𝗚𝗔𝗗𝗢𝗥𝗘𝗦")
         return
 
-    ranking = sorted(progreso.items(), key=lambda x: x[1]["piso_maximo"], reverse=True)
+    ranking = sorted(progreso.items(), key=lambda x: x[1].get("piso_maximo", 0), reverse=True)
 
     texto = "🏆 𝗥𝗔𝗡𝗞𝗜𝗡𝗚 𝗗𝗘 𝗟𝗔 𝗧𝗢𝗥𝗥𝗘\n\n"
     for i, (user_id, datos) in enumerate(ranking[:10], 1):
-        texto += f"{i}. {datos['nombre']} - Piso {datos['piso_maximo']}\n"
+        texto += f"{i}. {datos['nombre']} - Piso {datos.get('piso_maximo', 0)}\n"
 
     bot.reply_to(message, texto)
 
