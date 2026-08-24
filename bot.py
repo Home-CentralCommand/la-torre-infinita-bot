@@ -59,7 +59,10 @@ def cargar_progreso():
     return {}
 
 def guardar_progreso():
-    github_put(FILE_PATH_PROGRESS, json.dumps(progreso, indent=2))
+    try:
+        github_put(FILE_PATH_PROGRESS, json.dumps(progreso, indent=2))
+    except:
+        pass
 
 # ---------- DATOS DEL JUEGO ----------
 monstruos = [
