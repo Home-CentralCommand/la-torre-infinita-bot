@@ -13,6 +13,7 @@ TOKEN = "8900609729:AAHiqL3g7eRVbZtDE-wLg9sGEUfATe7RwNo"
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
 REPO = "Home-CentralCommand/la-torre-infinita-bot"
 FILE_PATH_PROGRESS = "progreso.json"
+BASE_URL = "https://raw.githubusercontent.com/Home-CentralCommand/la-torre-infinita-bot/main/monstruos"
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
@@ -69,16 +70,16 @@ def guardar_progreso():
 
 # ---------- DATOS DEL JUEGO ----------
 monstruos = [
-    {"nombre": "Alma Errante", "emoji": "🧟", "vida": 20, "daño": 5, "oro": 10, "xp": 5},
-    {"nombre": "Orco Salvaje", "emoji": "🧌", "vida": 30, "daño": 8, "oro": 15, "xp": 8},
-    {"nombre": "Demonio Menor", "emoji": "👹", "vida": 40, "daño": 12, "oro": 20, "xp": 12},
-    {"nombre": "Wyrm Sombrío", "emoji": "🐉", "vida": 55, "daño": 15, "oro": 30, "xp": 15},
-    {"nombre": "Caballero Caído", "emoji": "⚔️", "vida": 70, "daño": 18, "oro": 40, "xp": 18},
-    {"nombre": "Liche Maligno", "emoji": "🪄", "vida": 90, "daño": 22, "oro": 55, "xp": 22},
+    {"nombre": "Alma Errante", "emoji": "🧟", "vida": 20, "daño": 5, "oro": 10, "xp": 5, "imagen": "alma_errante.jpg"},
+    {"nombre": "Orco Salvaje", "emoji": "🧌", "vida": 30, "daño": 8, "oro": 15, "xp": 8, "imagen": "orco_salvaje.jpg"},
+    {"nombre": "Demonio Menor", "emoji": "👹", "vida": 40, "daño": 12, "oro": 20, "xp": 12, "imagen": "demonio_menor.jpg"},
+    {"nombre": "Wyrm Sombrío", "emoji": "🐉", "vida": 55, "daño": 15, "oro": 30, "xp": 15, "imagen": "wyrm_sombrio.jpg"},
+    {"nombre": "Caballero Caído", "emoji": "⚔️", "vida": 70, "daño": 18, "oro": 40, "xp": 18, "imagen": "caballero_caido.jpg"},
+    {"nombre": "Liche Maligno", "emoji": "🪄", "vida": 90, "daño": 22, "oro": 55, "xp": 22, "imagen": "liche_maligno.jpg"},
 ]
 
 jefes = [
-    {"nombre": "Señor de las Sombras", "emoji": "👑", "vida": 120, "daño": 25, "oro": 80, "xp": 35},
+    {"nombre": "Señor de las Sombras", "emoji": "👑", "vida": 120, "daño": 25, "oro": 80, "xp": 35, "imagen": "señor_de_las_sombras.jpg"},
 ]
 
 # ---------- INICIALIZACIÓN ----------
@@ -108,11 +109,10 @@ def iniciar_torre(message):
             "piso_actual": 1,
             "arma_daño": 10,
             "pociones": 1,
-            "partida": None  # partida activa, inicialmente ninguna
+            "partida": None
         }
         guardar_progreso()
     else:
-        # Reiniciar la partida activa (si existe se sobrescribe)
         progreso[user_id]["partida"] = {
             "vida": 100,
             "piso": 1,
@@ -181,7 +181,6 @@ def iniciar_aventura(call):
 def mostrar_piso(message, user_id):
     partida = progreso[user_id]["partida"]
 
-    # Si no hay monstruo actual o murió, generamos uno nuevo
     if not partida.get("monstruo_actual") or partida["monstruo_actual"]["vida"] <= 0:
         piso = partida["piso"]
         if piso % 10 == 0:
@@ -193,6 +192,7 @@ def mostrar_piso(message, user_id):
         monstruo = partida["monstruo_actual"]
 
     piso = partida["piso"]
+    imagen_url = f"{BASE_URL}/{monstruo['imagen']}"
 
     markup = InlineKeyboardMarkup(row_width=1)
     markup.add(
@@ -202,15 +202,25 @@ def mostrar_piso(message, user_id):
         InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡", callback_data="accion_pocion")
     )
 
-    bot.send_message(message.chat.id,
+    texto = (
         f"🗼 𝗣𝗜𝗦𝗢 {piso}\n\n"
         f"{monstruo['emoji']} 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['nombre']}\n"
         f"❤️ 𝗩𝗜𝗗𝗔 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['vida']}\n\n"
         f"❤️ 𝗧𝗨 𝗩𝗜𝗗𝗔: {partida['vida']}\n"
         f"⚔️ 𝗧𝗨 𝗗𝗔Ñ𝗢: {partida['arma_daño']}\n"
-        f"💊 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}",
-        reply_markup=markup
+        f"💊 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}"
     )
+
+    try:
+        bot.send_photo(
+            message.chat.id,
+            photo=imagen_url,
+            caption=texto,
+            reply_markup=markup
+        )
+    except Exception as e:
+        # Si falla la imagen, enviar solo texto
+        bot.send_message(message.chat.id, texto, reply_markup=markup)
 
 # ---------- ACCIONES DE BATALLA ----------
 @bot.callback_query_handler(func=lambda call: call.data.startswith("accion_"))
@@ -266,35 +276,29 @@ def accion_batalla(call):
         else:
             resultado = "❌ 𝗡𝗢 𝗧𝗜𝗘𝗡𝗘𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦"
 
-    # Actualizar la partida en el diccionario global
     progreso[user_id]["partida"] = partida
     guardar_progreso()
 
-    # Verificar muerte del jugador
     if partida["vida"] <= 0:
         bot.send_message(chat_id,
             "💀 𝗖𝗔𝗜𝗦𝗧𝗘\n\n"
             f"Moriste en el piso {partida['piso']}.\n"
             f"Experiencia ganada: {partida['piso'] * 2}"
         )
-        # Actualizar progreso permanente
         progreso[user_id]["piso_maximo"] = max(progreso[user_id].get("piso_maximo", 0), partida["piso"])
         progreso[user_id]["experiencia"] += partida["piso"] * 2
-        # Eliminar partida activa
         progreso[user_id]["partida"] = None
         guardar_progreso()
         return
 
-    # Verificar muerte del monstruo
     if monstruo["vida"] <= 0:
         oro_ganado = monstruo["oro"]
         xp_ganada = monstruo["xp"]
         progreso[user_id]["oro"] += oro_ganado
         progreso[user_id]["experiencia"] += xp_ganada
         partida["piso"] += 1
-        partida["vida"] = min(partida["vida"] + 10, 100)  # Regeneración
+        partida["vida"] = min(partida["vida"] + 10, 100)
         progreso[user_id]["piso_actual"] = partida["piso"]
-        # Limpiar monstruo_actual para generar uno nuevo
         partida["monstruo_actual"] = None
         progreso[user_id]["partida"] = partida
         guardar_progreso()
@@ -308,7 +312,6 @@ def accion_batalla(call):
         mostrar_piso(call.message, user_id)
         return
 
-    # Si nadie muere, mostrar estado actual y continuar batalla
     bot.send_message(chat_id,
         f"{resultado}\n\n"
         f"❤️ 𝗧𝗨 𝗩𝗜𝗗𝗔: {partida['vida']}\n"
