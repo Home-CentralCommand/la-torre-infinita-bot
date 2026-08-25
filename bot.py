@@ -84,6 +84,7 @@ jefes = [
 
 # ---------- INICIALIZACIÓN ----------
 progreso = cargar_progreso()
+partidas = {}  # partidas activas en memoria
 
 # ---------- RUTA FLASK ----------
 @app.route('/')
@@ -109,18 +110,17 @@ def iniciar_torre(message):
             "piso_actual": 1,
             "arma_daño": 10,
             "pociones": 1,
-            "partida": None
         }
         guardar_progreso()
-    else:
-        progreso[user_id]["partida"] = {
-            "vida": 100,
-            "piso": 1,
-            "arma_daño": progreso[user_id].get("arma_daño", 10),
-            "pociones": progreso[user_id].get("pociones", 1),
-            "monstruo_actual": None
-        }
-        guardar_progreso()
+
+    # Crear partida en memoria
+    partidas[user_id] = {
+        "vida": 100,
+        "piso": 1,
+        "arma_daño": progreso[user_id].get("arma_daño", 10),
+        "pociones": progreso[user_id].get("pociones", 1),
+        "monstruo_actual": None
+    }
 
     markup = InlineKeyboardMarkup(row_width=1)
     markup.add(
@@ -172,14 +172,14 @@ def iniciar_aventura(call):
     bot.answer_callback_query(call.id)
     user_id = call.from_user.id
 
-    if user_id not in progreso or not progreso[user_id].get("partida"):
+    if user_id not in partidas:
         bot.send_message(call.message.chat.id, "❌ 𝗡𝗢 𝗛𝗔𝗬 𝗣𝗔𝗥𝗧𝗜𝗗𝗔 𝗔𝗖𝗧𝗜𝗩𝗔")
         return
 
     mostrar_piso(call.message, user_id)
 
 def mostrar_piso(message, user_id):
-    partida = progreso[user_id]["partida"]
+    partida = partidas[user_id]
 
     if not partida.get("monstruo_actual") or partida["monstruo_actual"]["vida"] <= 0:
         piso = partida["piso"]
@@ -211,16 +211,14 @@ def mostrar_piso(message, user_id):
         f"💊 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}"
     )
 
+    # Enviar imagen primero
     try:
-        bot.send_photo(
-            message.chat.id,
-            photo=imagen_url,
-            caption=texto,
-            reply_markup=markup
-        )
-    except Exception as e:
-        # Si falla la imagen, enviar solo texto
-        bot.send_message(message.chat.id, texto, reply_markup=markup)
+        bot.send_photo(message.chat.id, photo=imagen_url)
+    except:
+        pass
+
+    # Luego enviar texto con botones
+    bot.send_message(message.chat.id, texto, reply_markup=markup)
 
 # ---------- ACCIONES DE BATALLA ----------
 @bot.callback_query_handler(func=lambda call: call.data.startswith("accion_"))
@@ -229,11 +227,11 @@ def accion_batalla(call):
     chat_id = call.message.chat.id
     user_id = call.from_user.id
 
-    if user_id not in progreso or not progreso[user_id].get("partida"):
+    if user_id not in partidas:
         bot.send_message(chat_id, "❌ 𝗡𝗢 𝗛𝗔𝗬 𝗣𝗔𝗥𝗧𝗜𝗗𝗔 𝗔𝗖𝗧𝗜𝗩𝗔")
         return
 
-    partida = progreso[user_id]["partida"]
+    partida = partidas[user_id]
     monstruo = partida.get("monstruo_actual")
     if monstruo is None:
         bot.send_message(chat_id, "❌ 𝗡𝗢 𝗛𝗔𝗬 𝗣𝗔𝗥𝗧𝗜𝗗𝗔 𝗔𝗖𝗧𝗜𝗩𝗔")
@@ -276,9 +274,7 @@ def accion_batalla(call):
         else:
             resultado = "❌ 𝗡𝗢 𝗧𝗜𝗘𝗡𝗘𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦"
 
-    progreso[user_id]["partida"] = partida
-    guardar_progreso()
-
+    # Verificar muerte del jugador
     if partida["vida"] <= 0:
         bot.send_message(chat_id,
             "💀 𝗖𝗔𝗜𝗦𝗧𝗘\n\n"
@@ -287,10 +283,11 @@ def accion_batalla(call):
         )
         progreso[user_id]["piso_maximo"] = max(progreso[user_id].get("piso_maximo", 0), partida["piso"])
         progreso[user_id]["experiencia"] += partida["piso"] * 2
-        progreso[user_id]["partida"] = None
+        partidas.pop(user_id, None)
         guardar_progreso()
         return
 
+    # Verificar muerte del monstruo
     if monstruo["vida"] <= 0:
         oro_ganado = monstruo["oro"]
         xp_ganada = monstruo["xp"]
@@ -300,7 +297,6 @@ def accion_batalla(call):
         partida["vida"] = min(partida["vida"] + 10, 100)
         progreso[user_id]["piso_actual"] = partida["piso"]
         partida["monstruo_actual"] = None
-        progreso[user_id]["partida"] = partida
         guardar_progreso()
 
         bot.send_message(chat_id,
@@ -312,6 +308,7 @@ def accion_batalla(call):
         mostrar_piso(call.message, user_id)
         return
 
+    # Si nadie muere, mostrar estado actual y continuar batalla
     bot.send_message(chat_id,
         f"{resultado}\n\n"
         f"❤️ 𝗧𝗨 𝗩𝗜𝗗𝗔: {partida['vida']}\n"
