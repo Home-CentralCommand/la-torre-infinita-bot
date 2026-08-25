@@ -199,7 +199,7 @@ def iniciar_torre(message):
 
     bot.send_message(chat_id,
         "🗼 𝗟𝗔 𝗧𝗢𝗥𝗥𝗘 𝗜𝗡𝗙𝗜𝗡𝗜𝗧𝗔\n\n"
-        "⚔️ 𝗝𝘂𝗲𝗴𝗼 𝗥𝗣𝗚 𝗱𝗲 𝗮𝘃𝗲𝗻𝘁𝘂𝗿𝗮 𝗼𝘀𝗰𝘂𝗿𝗮.\n"
+        "⚔️ 𝗥𝗣𝗚 𝗱𝗲 𝗮𝘃𝗲𝗻𝘁𝘂𝗿𝗮 𝗼𝘀𝗰𝘂𝗿𝗮.\n"
         "Sube pisos, vence monstruos y haz historia.\n\n"
         "Bienvenido, aventurero.\n\n"
         "Tu misión es subir pisos venciendo\n"
