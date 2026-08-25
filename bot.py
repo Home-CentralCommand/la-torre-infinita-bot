@@ -248,9 +248,18 @@ def iniciar_aventura(call):
         bot.send_message(call.message.chat.id, "❌ 𝗡𝗢 𝗛𝗔𝗬 𝗣𝗔𝗥𝗧𝗜𝗗𝗔 𝗔𝗖𝗧𝗜𝗩𝗔")
         return
 
-    mostrar_piso(call.message, user_id)
+    mostrar_nuevo_piso(call.message.chat.id, user_id)
 
-def mostrar_piso(message, user_id):
+def mostrar_nuevo_piso(chat_id, user_id):
+    if user_id not in partidas:
+        return
+
+    try:
+        if partidas[user_id].get("message_id"):
+            bot.delete_message(chat_id, partidas[user_id]["message_id"])
+    except:
+        pass
+
     partida = partidas[user_id]
 
     if not partida.get("monstruo_actual") or partida["monstruo_actual"]["vida"] <= 0:
@@ -288,14 +297,14 @@ def mostrar_piso(message, user_id):
 
     try:
         msg = bot.send_photo(
-            message.chat.id,
+            chat_id,
             photo=imagen_url,
             caption=texto,
             reply_markup=markup
         )
         partida["message_id"] = msg.message_id
     except:
-        msg = bot.send_message(message.chat.id, texto, reply_markup=markup)
+        msg = bot.send_message(chat_id, texto, reply_markup=markup)
         partida["message_id"] = msg.message_id
 
 # ---------- ACCIONES DE BATALLA ----------
@@ -394,7 +403,7 @@ def accion_batalla(call):
             f"🗼 𝗣𝗜𝗦𝗢 𝗔𝗟𝗖𝗔𝗡𝗭𝗔𝗗𝗢: {partida['piso']}\n\n"
             "⏳ El siguiente monstruo aparecerá en 5 segundos..."
         )
-        threading.Timer(5, lambda: mostrar_piso(call.message, user_id)).start()
+        threading.Timer(5, lambda: mostrar_nuevo_piso(chat_id, user_id)).start()
         return
 
     # Si nadie muere, editar mensaje actual
