@@ -70,21 +70,91 @@ def guardar_progreso():
 
 # ---------- DATOS DEL JUEGO ----------
 monstruos = [
-    {"nombre": "Alma Errante", "emoji": "🧟", "vida": 20, "daño": 5, "oro": 10, "xp": 5, "imagen": "alma_errante.jpg"},
-    {"nombre": "Orco Salvaje", "emoji": "🧌", "vida": 30, "daño": 8, "oro": 15, "xp": 8, "imagen": "orco_salvaje.jpg"},
-    {"nombre": "Demonio Menor", "emoji": "👹", "vida": 40, "daño": 12, "oro": 20, "xp": 12, "imagen": "demonio_menor.jpg"},
-    {"nombre": "Wyrm Sombrío", "emoji": "🐉", "vida": 55, "daño": 15, "oro": 30, "xp": 15, "imagen": "wyrm_sombrio.jpg"},
-    {"nombre": "Caballero Caído", "emoji": "⚔️", "vida": 70, "daño": 18, "oro": 40, "xp": 18, "imagen": "caballero_caido.jpg"},
-    {"nombre": "Liche Maligno", "emoji": "🪄", "vida": 90, "daño": 22, "oro": 55, "xp": 22, "imagen": "liche_maligno.jpg"},
+    {
+        "nombre": "Alma Errante",
+        "emoji": "🧟",
+        "vida": 20,
+        "daño": 5,
+        "oro": 10,
+        "xp": 5,
+        "imagen": "alma_errante.jpg",
+        "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗔𝗦 𝗔𝗟𝗠𝗔𝗦",
+        "descripcion": "𝘜𝘯 𝘦𝘴𝘱𝘦𝘤𝘵𝘳𝘰 𝘲𝘶𝘦 𝘥𝘦𝘢𝘮𝘣𝘶𝘭𝘢 𝘦𝘵𝘦𝘳𝘯𝘢𝘮𝘦𝘯𝘵𝘦.\n𝘚𝘶𝘴 𝘨𝘦𝘮𝘪𝘥𝘰𝘴 𝘩𝘪𝘦𝘭𝘢𝘯 𝘭𝘢 𝘴𝘢𝘯𝘨𝘳𝘦."
+    },
+    {
+        "nombre": "Orco Salvaje",
+        "emoji": "🧌",
+        "vida": 30,
+        "daño": 8,
+        "oro": 15,
+        "xp": 8,
+        "imagen": "orco_salvaje.jpg",
+        "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗔 𝗛𝗢𝗥𝗗𝗔",
+        "descripcion": "𝘜𝘯𝘢 𝘣𝘦𝘴𝘵𝘪𝘢 𝘮𝘶𝘴𝘤𝘶𝘭𝘰𝘴𝘢 𝘤𝘰𝘯 𝘴𝘦𝘥 𝘥𝘦 𝘴𝘢𝘯𝘨𝘳𝘦.\n𝘚𝘶 𝘩𝘢𝘤𝘩𝘢 𝘦𝘴 𝘵𝘢𝘯 𝘨𝘳𝘢𝘯𝘥𝘦 𝘤𝘰𝘮𝘰 𝘴𝘶 𝘧𝘶𝘳𝘪𝘢."
+    },
+    {
+        "nombre": "Demonio Menor",
+        "emoji": "👹",
+        "vida": 40,
+        "daño": 12,
+        "oro": 20,
+        "xp": 12,
+        "imagen": "demonio_menor.jpg",
+        "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗢𝗦 𝗗𝗘𝗠𝗢𝗡𝗜𝗢𝗦",
+        "descripcion": "𝘜𝘯 𝘴𝘦𝘳 𝘥𝘦 𝘭𝘭𝘢𝘮𝘢𝘴 𝘺 𝘤𝘰𝘭𝘦𝘳𝘢.\n𝘚𝘶𝘴 𝘤𝘶𝘦𝘳𝘯𝘰𝘴 𝘣𝘳𝘪𝘭𝘭𝘢𝘯 𝘦𝘯 𝘭𝘢 𝘰𝘴𝘤𝘶𝘳𝘪𝘥𝘢𝘥."
+    },
+    {
+        "nombre": "Wyrm Sombrío",
+        "emoji": "🐉",
+        "vida": 55,
+        "daño": 15,
+        "oro": 30,
+        "xp": 15,
+        "imagen": "wyrm_sombrio.jpg",
+        "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗔𝗦 𝗦𝗢𝗠𝗕𝗥𝗔𝗦",
+        "descripcion": "𝘜𝘯 𝘥𝘳𝘢𝘨𝘰𝘯 𝘥𝘦 𝘦𝘴𝘤𝘢𝘮𝘢𝘴 𝘰𝘴𝘤𝘶𝘳𝘢𝘴.\n𝘚𝘶 𝘢𝘭𝘪𝘦𝘯𝘵𝘰 𝘦𝘴 𝘷𝘦𝘯𝘦𝘯𝘰 𝘱𝘶𝘳𝘰."
+    },
+    {
+        "nombre": "Caballero Caído",
+        "emoji": "⚔️",
+        "vida": 70,
+        "daño": 18,
+        "oro": 40,
+        "xp": 18,
+        "imagen": "caballero_caido.jpg",
+        "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗔 𝗚𝗨𝗘𝗥𝗥𝗔",
+        "descripcion": "𝘜𝘯 𝘨𝘶𝘦𝘳𝘳𝘦𝘳𝘰 𝘤𝘰𝘳𝘳𝘰𝘮𝘱𝘪𝘥𝘰 𝘱𝘰𝘳 𝘭𝘢 𝘰𝘴𝘤𝘶𝘳𝘪𝘥𝘢𝘥.\n𝘚𝘶 𝘦𝘴𝘱𝘢𝘥𝘢 𝘢𝘶́𝘯 𝘳𝘦𝘤𝘶𝘦𝘳𝘥𝘢 𝘭𝘢 𝘨𝘭𝘰𝘳𝘪𝘢."
+    },
+    {
+        "nombre": "Liche Maligno",
+        "emoji": "🪄",
+        "vida": 90,
+        "daño": 22,
+        "oro": 55,
+        "xp": 22,
+        "imagen": "liche_maligno.jpg",
+        "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗔 𝗠𝗔𝗚𝗜𝗔 𝗢𝗦𝗖𝗨𝗥𝗔",
+        "descripcion": "𝘜𝘯 𝘯𝘪𝘨𝘳𝘰𝘮𝘢𝘯𝘵𝘦 𝘲𝘶𝘦 𝘥𝘦𝘴𝘢𝘧𝘪́𝘢 𝘢 𝘭𝘢 𝘮𝘶𝘦𝘳𝘵𝘦.\n𝘚𝘶 𝘮𝘢𝘨𝘪𝘢 𝘤𝘰𝘳𝘳𝘰𝘮𝘱𝘦 𝘦𝘭 𝘢𝘭𝘮𝘢."
+    },
 ]
 
 jefes = [
-    {"nombre": "Señor de las Sombras", "emoji": "👑", "vida": 120, "daño": 25, "oro": 80, "xp": 35, "imagen": "senor_de_las_sombras.jpg"},
+    {
+        "nombre": "Señor de las Sombras",
+        "emoji": "👑",
+        "vida": 120,
+        "daño": 25,
+        "oro": 80,
+        "xp": 35,
+        "imagen": "senor_de_las_sombras.jpg",
+        "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗔 𝗢𝗦𝗖𝗨𝗥𝗜𝗗𝗔𝗗 𝗘𝗧𝗘𝗥𝗡𝗔",
+        "descripcion": "𝘌𝘭 𝘳𝘦𝘺 𝘥𝘦 𝘭𝘢𝘴 𝘴𝘰𝘮𝘣𝘳𝘢𝘴 𝘩𝘢 𝘥𝘦𝘴𝘱𝘦𝘳𝘵𝘢𝘥𝘰.\n𝘚𝘶 𝘱𝘰𝘥𝘦𝘳 𝘩𝘢𝘤𝘦 𝘵𝘦𝘮𝘣𝘭𝘢𝘳 𝘢 𝘭𝘰𝘴 𝘷𝘢𝘭𝘪𝘦𝘯𝘵𝘦𝘴."
+    },
 ]
 
 # ---------- INICIALIZACIÓN ----------
 progreso = cargar_progreso()
-partidas = {}  # partidas activas en memoria
+partidas = {}
 
 # ---------- RUTA FLASK ----------
 @app.route('/')
@@ -113,7 +183,6 @@ def iniciar_torre(message):
         }
         guardar_progreso()
 
-    # Crear partida en memoria
     partidas[user_id] = {
         "vida": 100,
         "piso": 1,
@@ -203,12 +272,15 @@ def mostrar_piso(message, user_id):
     )
 
     texto = (
-        f"🗼 𝗣𝗜𝗦𝗢 {piso}\n\n"
+        f"🗼 𝗣𝗜𝗦𝗢 {piso}\n"
+        f"{monstruo['mundo']}\n\n"
+        f"{monstruo['descripcion']}\n\n"
         f"{monstruo['emoji']} 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['nombre']}\n"
         f"❤️ 𝗩𝗜𝗗𝗔 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['vida']}\n\n"
         f"❤️ 𝗧𝗨 𝗩𝗜𝗗𝗔: {partida['vida']}\n"
-        f"⚔️ 𝗧𝗨 𝗗𝗔Ñ𝗢: {partida['arma_daño']}\n"
-        f"💊 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}"
+        f"⚔️ 𝗣𝗢𝗗𝗘𝗥 𝗗𝗘 𝗔𝗧𝗔𝗤𝗨𝗘: {partida['arma_daño']}\n"
+        f"💊 𝗧𝗨𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}\n\n"
+        "¿𝗤𝘂𝗲́ 𝗱𝗲𝘀𝗲𝗮𝘀 𝗵𝗮𝗰𝗲𝗿?"
     )
 
     # Enviar imagen primero
@@ -274,7 +346,6 @@ def accion_batalla(call):
         else:
             resultado = "❌ 𝗡𝗢 𝗧𝗜𝗘𝗡𝗘𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦"
 
-    # Verificar muerte del jugador
     if partida["vida"] <= 0:
         bot.send_message(chat_id,
             "💀 𝗖𝗔𝗜𝗦𝗧𝗘\n\n"
@@ -287,7 +358,6 @@ def accion_batalla(call):
         guardar_progreso()
         return
 
-    # Verificar muerte del monstruo
     if monstruo["vida"] <= 0:
         oro_ganado = monstruo["oro"]
         xp_ganada = monstruo["xp"]
@@ -308,7 +378,6 @@ def accion_batalla(call):
         mostrar_piso(call.message, user_id)
         return
 
-    # Si nadie muere, mostrar estado actual y continuar batalla
     bot.send_message(chat_id,
         f"{resultado}\n\n"
         f"❤️ 𝗧𝗨 𝗩𝗜𝗗𝗔: {partida['vida']}\n"
