@@ -30,21 +30,6 @@
     "experiencia": 0,
     "piso_actual": 1,
     "arma_da\u00f1o": 10,
-    "pociones": 1,
-    "partida": {
-      "vida": 82,
-      "piso": 1,
-      "arma_da\u00f1o": 10,
-      "pociones": 1,
-      "monstruo_actual": {
-        "nombre": "Caballero Ca\u00eddo",
-        "emoji": "\u2694\ufe0f",
-        "vida": 60,
-        "da\u00f1o": 18,
-        "oro": 40,
-        "xp": 18,
-        "imagen": "caballero_caido.jpg"
-      }
-    }
+    "pociones": 1
   }
 }
