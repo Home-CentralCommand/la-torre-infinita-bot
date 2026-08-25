@@ -261,14 +261,18 @@ def mostrar_nuevo_piso(chat_id, user_id):
     if user_id not in partidas:
         return
 
-    try:
-        if partidas[user_id].get("message_id"):
-            bot.delete_message(chat_id, partidas[user_id]["message_id"])
-    except:
-        pass
-
     partida = partidas[user_id]
 
+    # Limpiar mensaje anterior
+    try:
+        if partida.get("message_id"):
+            bot.delete_message(chat_id, partida["message_id"])
+    except:
+        pass
+    finally:
+        partida["message_id"] = None
+
+    # Generar monstruo solo si no hay o está muerto
     if not partida.get("monstruo_actual") or partida["monstruo_actual"]["vida"] <= 0:
         piso = partida["piso"]
         if piso % 10 == 0:
@@ -312,7 +316,8 @@ def mostrar_nuevo_piso(chat_id, user_id):
             reply_markup=markup
         )
         partida["message_id"] = msg.message_id
-    except:
+    except Exception as e:
+        print(f"Error enviando foto: {e}")
         msg = bot.send_message(chat_id, texto, reply_markup=markup)
         partida["message_id"] = msg.message_id
 
