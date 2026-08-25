@@ -287,7 +287,7 @@ def mostrar_nuevo_piso(chat_id, user_id):
     markup.add(
         InlineKeyboardButton("⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥", callback_data="accion_atacar"),
         InlineKeyboardButton("🛡️ 𝗗𝗘𝗙𝗘𝗡𝗗𝗘𝗥", callback_data="accion_defender"),
-        InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔\n𝘔𝘢𝘨𝘪𝘤 𝘢𝘵𝘵𝘢𝘤𝘬 - %60 𝘤𝘩𝘢𝘯𝘤𝘦", callback_data="accion_magia"),
+        InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔 - 𝘔𝘢𝘨𝘪𝘤 𝘢𝘵𝘵𝘢𝘤𝘬 %60", callback_data="accion_magia"),
         InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡", callback_data="accion_pocion")
     )
 
@@ -426,7 +426,7 @@ def accion_batalla(call):
     markup.add(
         InlineKeyboardButton("⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥", callback_data="accion_atacar"),
         InlineKeyboardButton("🛡️ 𝗗𝗘𝗙𝗘𝗡𝗗𝗘𝗥", callback_data="accion_defender"),
-        InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔\n𝘔𝘢𝘨𝘪𝘤 𝘢𝘵𝘵𝘢𝘤𝘬 - %60 𝘤𝘩𝘢𝘯𝘤𝘦", callback_data="accion_magia"),
+        InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔 - 𝘔𝘢𝘨𝘪𝘤 𝘢𝘵𝘵𝘢𝘤𝘬 %60", callback_data="accion_magia"),
         InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡", callback_data="accion_pocion")
     )
 
