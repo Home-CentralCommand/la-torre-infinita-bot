@@ -79,6 +79,7 @@ monstruos = [
         "xp": 5,
         "imagen": "alma_errante.jpg",
         "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗔𝗦 𝗔𝗟𝗠𝗔𝗦",
+        "zona": "Cementerio Olvidado",
         "descripcion": "𝘜𝘯 𝘦𝘴𝘱𝘦𝘤𝘵𝘳𝘰 𝘲𝘶𝘦 𝘥𝘦𝘢𝘮𝘣𝘶𝘭𝘢 𝘦𝘵𝘦𝘳𝘯𝘢𝘮𝘦𝘯𝘵𝘦.\n𝘚𝘶𝘴 𝘨𝘦𝘮𝘪𝘥𝘰𝘴 𝘩𝘪𝘦𝘭𝘢𝘯 𝘭𝘢 𝘴𝘢𝘯𝘨𝘳𝘦."
     },
     {
@@ -90,6 +91,7 @@ monstruos = [
         "xp": 8,
         "imagen": "orco_salvaje.jpg",
         "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗔 𝗛𝗢𝗥𝗗𝗔",
+        "zona": "La Horda",
         "descripcion": "𝘜𝘯𝘢 𝘣𝘦𝘴𝘵𝘪𝘢 𝘮𝘶𝘴𝘤𝘶𝘭𝘰𝘴𝘢 𝘤𝘰𝘯 𝘴𝘦𝘥 𝘥𝘦 𝘴𝘢𝘯𝘨𝘳𝘦.\n𝘚𝘶 𝘩𝘢𝘤𝘩𝘢 𝘦𝘴 𝘵𝘢𝘯 𝘨𝘳𝘢𝘯𝘥𝘦 𝘤𝘰𝘮𝘰 𝘴𝘶 𝘧𝘶𝘳𝘪𝘢."
     },
     {
@@ -101,6 +103,7 @@ monstruos = [
         "xp": 12,
         "imagen": "demonio_menor.jpg",
         "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗢𝗦 𝗗𝗘𝗠𝗢𝗡𝗜𝗢𝗦",
+        "zona": "El Infierno",
         "descripcion": "𝘜𝘯 𝘴𝘦𝘳 𝘥𝘦 𝘭𝘭𝘢𝘮𝘢𝘴 𝘺 𝘤𝘰𝘭𝘦𝘳𝘢.\n𝘚𝘶𝘴 𝘤𝘶𝘦𝘳𝘯𝘰𝘴 𝘣𝘳𝘪𝘭𝘭𝘢𝘯 𝘦𝘯 𝘭𝘢 𝘰𝘴𝘤𝘶𝘳𝘪𝘥𝘢𝘥."
     },
     {
@@ -112,6 +115,7 @@ monstruos = [
         "xp": 15,
         "imagen": "wyrm_sombrio.jpg",
         "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗔𝗦 𝗦𝗢𝗠𝗕𝗥𝗔𝗦",
+        "zona": "Las Sombras",
         "descripcion": "𝘜𝘯 𝘥𝘳𝘢𝘨𝘰𝘯 𝘥𝘦 𝘦𝘴𝘤𝘢𝘮𝘢𝘴 𝘰𝘴𝘤𝘶𝘳𝘢𝘴.\n𝘚𝘶 𝘢𝘭𝘪𝘦𝘯𝘵𝘰 𝘦𝘴 𝘷𝘦𝘯𝘦𝘯𝘰 𝘱𝘶𝘳𝘰."
     },
     {
@@ -123,6 +127,7 @@ monstruos = [
         "xp": 18,
         "imagen": "caballero_caido.jpg",
         "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗔 𝗚𝗨𝗘𝗥𝗥𝗔",
+        "zona": "La Guerra",
         "descripcion": "𝘜𝘯 𝘨𝘶𝘦𝘳𝘳𝘦𝘳𝘰 𝘤𝘰𝘳𝘳𝘰𝘮𝘱𝘪𝘥𝘰 𝘱𝘰𝘳 𝘭𝘢 𝘰𝘴𝘤𝘶𝘳𝘪𝘥𝘢𝘥.\n𝘚𝘶 𝘦𝘴𝘱𝘢𝘥𝘢 𝘢𝘶́𝘯 𝘳𝘦𝘤𝘶𝘦𝘳𝘥𝘢 𝘭𝘢 𝘨𝘭𝘰𝘳𝘪𝘢."
     },
     {
@@ -134,6 +139,7 @@ monstruos = [
         "xp": 22,
         "imagen": "liche_maligno.jpg",
         "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗔 𝗠𝗔𝗚𝗜𝗔 𝗢𝗦𝗖𝗨𝗥𝗔",
+        "zona": "La Magia Oscura",
         "descripcion": "𝘜𝘯 𝘯𝘪𝘨𝘳𝘰𝘮𝘢𝘯𝘵𝘦 𝘲𝘶𝘦 𝘥𝘦𝘴𝘢𝘧𝘪́𝘢 𝘢 𝘭𝘢 𝘮𝘶𝘦𝘳𝘵𝘦.\n𝘚𝘶 𝘮𝘢𝘨𝘪𝘢 𝘤𝘰𝘳𝘳𝘰𝘮𝘱𝘦 𝘦𝘭 𝘢𝘭𝘮𝘢."
     },
 ]
@@ -148,6 +154,7 @@ jefes = [
         "xp": 35,
         "imagen": "senor_de_las_sombras.jpg",
         "mundo": "𝗘𝗟 𝗠𝗨𝗡𝗗𝗢 𝗗𝗘 𝗟𝗔 𝗢𝗦𝗖𝗨𝗥𝗜𝗗𝗔𝗗 𝗘𝗧𝗘𝗥𝗡𝗔",
+        "zona": "La Oscuridad Eterna",
         "descripcion": "𝘌𝘭 𝘳𝘦𝘺 𝘥𝘦 𝘭𝘢𝘴 𝘴𝘰𝘮𝘣𝘳𝘢𝘴 𝘩𝘢 𝘥𝘦𝘴𝘱𝘦𝘳𝘵𝘢𝘥𝘰.\n𝘚𝘶 𝘱𝘰𝘥𝘦𝘳 𝘩𝘢𝘤𝘦 𝘵𝘦𝘮𝘣𝘭𝘢𝘳 𝘢 𝘭𝘰𝘴 𝘷𝘢𝘭𝘪𝘦𝘯𝘵𝘦𝘴."
     },
 ]
@@ -224,7 +231,8 @@ def ver_guia(call):
         "🛡️ 𝗗𝗘𝗙𝗘𝗡𝗗𝗘𝗥\n"
         "Reduce el daño recibido.\n\n"
         "✨ 𝗠𝗔𝗚𝗜𝗔\n"
-        "Daño masivo, pero puede fallar.\n\n"
+        "Daño masivo, pero puede fallar.\n"
+        "60% de probabilidad de éxito.\n\n"
         "💊 𝗣𝗢𝗖𝗜𝗢𝗡\n"
         "Recupera 50 puntos de vida.\n"
         "━━━━━━━━━━━━━━━━━━\n"
@@ -279,12 +287,12 @@ def mostrar_nuevo_piso(chat_id, user_id):
     markup.add(
         InlineKeyboardButton("⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥", callback_data="accion_atacar"),
         InlineKeyboardButton("🛡️ 𝗗𝗘𝗙𝗘𝗡𝗗𝗘𝗥", callback_data="accion_defender"),
-        InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔", callback_data="accion_magia"),
+        InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔\n𝘔𝘢𝘨𝘪𝘤 𝘢𝘵𝘵𝘢𝘤𝘬 - %60 𝘤𝘩𝘢𝘯𝘤𝘦", callback_data="accion_magia"),
         InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡", callback_data="accion_pocion")
     )
 
     texto = (
-        f"🗼 𝗣𝗜𝗦𝗢 {piso}\n"
+        f"🗼 𝗣𝗜𝗦𝗢 {piso} - {monstruo['zona']}\n"
         f"{monstruo['mundo']}\n\n"
         f"{monstruo['descripcion']}\n\n"
         f"{monstruo['emoji']} 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['nombre']}\n"
@@ -361,7 +369,6 @@ def accion_batalla(call):
         else:
             resultado = "❌ 𝗡𝗢 𝗧𝗜𝗘𝗡𝗘𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦"
 
-    # Verificar muerte del jugador
     if partida["vida"] <= 0:
         exp_ganada = partida["piso"] * 2
         progreso[user_id]["experiencia"] += exp_ganada
@@ -381,7 +388,6 @@ def accion_batalla(call):
         partidas.pop(user_id, None)
         return
 
-    # Verificar muerte del monstruo
     if monstruo["vida"] <= 0:
         oro_ganado = monstruo["oro"]
         xp_ganada = monstruo["xp"]
@@ -406,7 +412,6 @@ def accion_batalla(call):
         threading.Timer(5, lambda: mostrar_nuevo_piso(chat_id, user_id)).start()
         return
 
-    # Si nadie muere, editar mensaje actual
     nuevo_texto = (
         f"{resultado}\n\n"
         f"{monstruo['emoji']} 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['nombre']}\n"
@@ -421,7 +426,7 @@ def accion_batalla(call):
     markup.add(
         InlineKeyboardButton("⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥", callback_data="accion_atacar"),
         InlineKeyboardButton("🛡️ 𝗗𝗘𝗙𝗘𝗡𝗗𝗘𝗥", callback_data="accion_defender"),
-        InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔", callback_data="accion_magia"),
+        InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔\n𝘔𝘢𝘨𝘪𝘤 𝘢𝘵𝘵𝘢𝘤𝘬 - %60 𝘤𝘩𝘢𝘯𝘤𝘦", callback_data="accion_magia"),
         InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡", callback_data="accion_pocion")
     )
 
