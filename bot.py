@@ -188,7 +188,8 @@ def iniciar_torre(message):
         "piso": 1,
         "arma_daño": progreso[user_id].get("arma_daño", 10),
         "pociones": progreso[user_id].get("pociones", 1),
-        "monstruo_actual": None
+        "monstruo_actual": None,
+        "message_id": None
     }
 
     markup = InlineKeyboardMarkup(row_width=1)
@@ -199,7 +200,7 @@ def iniciar_torre(message):
 
     bot.send_message(chat_id,
         "🗼 𝗟𝗔 𝗧𝗢𝗥𝗥𝗘 𝗜𝗡𝗙𝗜𝗡𝗜𝗧𝗔\n\n"
-        "⚔️ 𝗥𝗣𝗚 𝗱𝗲 𝗮𝘃𝗲𝗻𝘁𝘂𝗿𝗮 𝗼𝘀𝗰𝘂𝗿𝗮.\n"
+        "⚔️ 𝗝𝘂𝗲𝗴𝗼 𝗥𝗣𝗚 𝗱𝗲 𝗮𝘃𝗲𝗻𝘁𝘂𝗿𝗮 𝗼𝘀𝗰𝘂𝗿𝗮.\n"
         "Sube pisos, vence monstruos y haz historia.\n\n"
         "Bienvenido, aventurero.\n\n"
         "Tu misión es subir pisos venciendo\n"
@@ -285,14 +286,18 @@ def mostrar_piso(message, user_id):
         "¿𝗤𝘂𝗲́ 𝗱𝗲𝘀𝗲𝗮𝘀 𝗵𝗮𝗰𝗲𝗿?"
     )
 
-    # Enviar imagen primero
+    # Enviar imagen con caption y guardar message_id
     try:
-        bot.send_photo(message.chat.id, photo=imagen_url)
+        msg = bot.send_photo(
+            message.chat.id,
+            photo=imagen_url,
+            caption=texto,
+            reply_markup=markup
+        )
+        partida["message_id"] = msg.message_id
     except:
-        pass
-
-    # Luego enviar texto con botones
-    bot.send_message(message.chat.id, texto, reply_markup=markup)
+        msg = bot.send_message(message.chat.id, texto, reply_markup=markup)
+        partida["message_id"] = msg.message_id
 
 # ---------- ACCIONES DE BATALLA ----------
 @bot.callback_query_handler(func=lambda call: call.data.startswith("accion_"))
@@ -348,6 +353,7 @@ def accion_batalla(call):
         else:
             resultado = "❌ 𝗡𝗢 𝗧𝗜𝗘𝗡𝗘𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦"
 
+    # Verificar muerte del jugador
     if partida["vida"] <= 0:
         bot.send_message(chat_id,
             "💀 𝗖𝗔𝗜𝗦𝗧𝗘\n\n"
@@ -360,6 +366,7 @@ def accion_batalla(call):
         guardar_progreso()
         return
 
+    # Verificar muerte del monstruo
     if monstruo["vida"] <= 0:
         oro_ganado = monstruo["oro"]
         xp_ganada = monstruo["xp"]
@@ -372,20 +379,47 @@ def accion_batalla(call):
         guardar_progreso()
 
         bot.send_message(chat_id,
-            f"✅ 𝗩𝗘𝗡𝗖𝗜𝗦𝗧𝗘 𝗔𝗟 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢\n\n"
+            "⚔️ 𝗩𝗜𝗖𝗧𝗢𝗥𝗜𝗔\n\n"
+            "Has derrotado a:\n"
+            f"{monstruo['emoji']} {monstruo['nombre']}.\n\n"
             f"🪙 𝗢𝗥𝗢 𝗚𝗔𝗡𝗔𝗗𝗢: {oro_ganado}\n"
-            f"⭐ 𝗘𝗫𝗣: {xp_ganada}\n\n"
-            f"🗼 𝗦𝗨𝗕𝗘𝗦 𝗔𝗟 𝗣𝗜𝗦𝗢 {partida['piso']}"
+            f"⭐ 𝗘𝗫𝗣𝗘𝗥𝗜𝗘𝗡𝗖𝗜𝗔: {xp_ganada}\n"
+            "❤️ 𝗩𝗜𝗗𝗔 𝗥𝗘𝗖𝗨𝗣𝗘𝗥𝗔𝗗𝗔: +10\n\n"
+            f"🗼 𝗣𝗜𝗦𝗢 𝗔𝗟𝗖𝗔𝗡𝗭𝗔𝗗𝗢: {partida['piso']}\n\n"
+            "⏳ El siguiente monstruo aparecerá en 5 segundos..."
         )
-        mostrar_piso(call.message, user_id)
+        threading.Timer(5, lambda: mostrar_piso(call.message, user_id)).start()
         return
 
-    bot.send_message(chat_id,
+    # Si nadie muere, editar mensaje actual
+    nuevo_texto = (
         f"{resultado}\n\n"
+        f"{monstruo['emoji']} 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['nombre']}\n"
+        f"❤️ 𝗩𝗜𝗗𝗔 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['vida']}\n\n"
         f"❤️ 𝗧𝗨 𝗩𝗜𝗗𝗔: {partida['vida']}\n"
-        f"❤️ 𝗩𝗜𝗗𝗔 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['vida']}"
+        f"⚔️ 𝗣𝗢𝗗𝗘𝗥 𝗗𝗘 𝗔𝗧𝗔𝗤𝗨𝗘: {partida['arma_daño']}\n"
+        f"💊 𝗧𝗨𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}\n\n"
+        "¿𝗤𝘂𝗲́ 𝗱𝗲𝘀𝗲𝗮𝘀 𝗵𝗮𝗰𝗲𝗿?"
     )
-    mostrar_piso(call.message, user_id)
+
+    markup = InlineKeyboardMarkup(row_width=1)
+    markup.add(
+        InlineKeyboardButton("⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥", callback_data="accion_atacar"),
+        InlineKeyboardButton("🛡️ 𝗗𝗘𝗙𝗘𝗡𝗗𝗘𝗥", callback_data="accion_defender"),
+        InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔", callback_data="accion_magia"),
+        InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡", callback_data="accion_pocion")
+    )
+
+    try:
+        bot.edit_message_caption(
+            chat_id=chat_id,
+            message_id=partida["message_id"],
+            caption=nuevo_texto,
+            reply_markup=markup
+        )
+    except:
+        msg = bot.send_message(chat_id, nuevo_texto, reply_markup=markup)
+        partida["message_id"] = msg.message_id
 
 # ---------- COMANDO /miprogreso ----------
 @bot.message_handler(commands=['miprogreso'])
