@@ -286,7 +286,6 @@ def mostrar_piso(message, user_id):
         "¿𝗤𝘂𝗲́ 𝗱𝗲𝘀𝗲𝗮𝘀 𝗵𝗮𝗰𝗲𝗿?"
     )
 
-    # Enviar imagen con caption y guardar message_id
     try:
         msg = bot.send_photo(
             message.chat.id,
@@ -355,15 +354,22 @@ def accion_batalla(call):
 
     # Verificar muerte del jugador
     if partida["vida"] <= 0:
-        bot.send_message(chat_id,
-            "💀 𝗖𝗔𝗜𝗦𝗧𝗘\n\n"
-            f"Moriste en el piso {partida['piso']}.\n"
-            f"Experiencia ganada: {partida['piso'] * 2}"
-        )
+        exp_ganada = partida["piso"] * 2
+        progreso[user_id]["experiencia"] += exp_ganada
         progreso[user_id]["piso_maximo"] = max(progreso[user_id].get("piso_maximo", 0), partida["piso"])
-        progreso[user_id]["experiencia"] += partida["piso"] * 2
-        partidas.pop(user_id, None)
         guardar_progreso()
+
+        bot.send_message(chat_id,
+            "💀 𝗛𝗔𝗦 𝗖𝗔𝗜𝗗𝗢 𝗘𝗡 𝗕𝗔𝗧𝗔𝗟𝗟𝗔\n\n"
+            f"{monstruo['emoji']} {monstruo['nombre']} te ha derrotado en el piso {partida['piso']}.\n\n"
+            f"⭐ Experiencia ganada: {exp_ganada}\n"
+            f"🪙 Oro acumulado: {progreso[user_id].get('oro', 0)}\n"
+            f"🗼 Piso máximo alcanzado: {progreso[user_id]['piso_maximo']}\n\n"
+            "La torre te espera de nuevo.\n"
+            "Escribe /torre para volver a intentarlo.\n\n"
+            "“No es el fin, solo una pausa en tu leyenda.”"
+        )
+        partidas.pop(user_id, None)
         return
 
     # Verificar muerte del monstruo
