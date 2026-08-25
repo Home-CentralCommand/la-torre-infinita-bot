@@ -287,7 +287,8 @@ def mostrar_nuevo_piso(chat_id, user_id):
         InlineKeyboardButton("⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥", callback_data="accion_atacar"),
         InlineKeyboardButton("🛡️ 𝗗𝗘𝗙𝗘𝗡𝗗𝗘𝗥", callback_data="accion_defender"),
         InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔 - 𝘔𝘢𝘨𝘪𝘤 𝘢𝘵𝘵𝘢𝘤𝘬 %60", callback_data="accion_magia"),
-        InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡", callback_data="accion_pocion")
+        InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡 - 𝘊𝘢𝘳𝘨𝘢𝘳 𝘷𝘪𝘥𝘢 +50", callback_data="accion_pocion"),
+        InlineKeyboardButton("🛒 𝗧𝗜𝗘𝗡𝗗𝗔", callback_data="abrir_tienda")
     )
 
     texto = (
@@ -298,7 +299,8 @@ def mostrar_nuevo_piso(chat_id, user_id):
         f"❤️ 𝗩𝗜𝗗𝗔 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['vida']}\n\n"
         f"❤️ 𝗧𝗨 𝗩𝗜𝗗𝗔: {partida['vida']}\n"
         f"⚔️ 𝗣𝗢𝗗𝗘𝗥 𝗗𝗘 𝗔𝗧𝗔𝗤𝗨𝗘: {partida['arma_daño']}\n"
-        f"💊 𝗧𝗨𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}\n\n"
+        f"💊 𝗧𝗨𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}\n"
+        f"🪙 𝗧𝗨 𝗢𝗥𝗢: {progreso[user_id].get('oro', 0)}\n\n"
         "¿𝗤𝘂𝗲́ 𝗱𝗲𝘀𝗲𝗮𝘀 𝗵𝗮𝗰𝗲𝗿?"
     )
 
@@ -313,6 +315,67 @@ def mostrar_nuevo_piso(chat_id, user_id):
     except:
         msg = bot.send_message(chat_id, texto, reply_markup=markup)
         partida["message_id"] = msg.message_id
+
+# ---------- TIENDA ----------
+@bot.callback_query_handler(func=lambda call: call.data == "abrir_tienda")
+def abrir_tienda(call):
+    bot.answer_callback_query(call.id)
+    user_id = call.from_user.id
+
+    if user_id not in partidas:
+        return
+
+    markup = InlineKeyboardMarkup(row_width=1)
+    markup.add(
+        InlineKeyboardButton("💊 Comprar Poción - 20 oro", callback_data="comprar_pocion"),
+        InlineKeyboardButton("⬅️ Volver", callback_data="volver_batalla")
+    )
+
+    bot.send_message(call.message.chat.id,
+        "🛒 𝗧𝗜𝗘𝗡𝗗𝗔 𝗗𝗘 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦\n\n"
+        f"🪙 Tu oro: {progreso[user_id].get('oro', 0)}\n"
+        "💊 Poción de vida +50\n"
+        "💰 Costo: 20 de oro\n\n"
+        "¿Qué deseas hacer?",
+        reply_markup=markup
+    )
+
+@bot.callback_query_handler(func=lambda call: call.data == "comprar_pocion")
+def comprar_pocion(call):
+    bot.answer_callback_query(call.id)
+    user_id = call.from_user.id
+
+    if user_id not in partidas:
+        return
+
+    oro = progreso[user_id].get("oro", 0)
+
+    if oro >= 20:
+        progreso[user_id]["oro"] = oro - 20
+        partidas[user_id]["pociones"] = partidas[user_id].get("pociones", 0) + 1
+        guardar_progreso()
+        bot.send_message(call.message.chat.id,
+            "✅ 𝗖𝗢𝗠𝗣𝗥𝗔 𝗘𝗫𝗜𝗧𝗢𝗦𝗔\n\n"
+            "💊 Poción agregada a tu inventario.\n"
+            f"🪙 Oro restante: {progreso[user_id]['oro']}"
+        )
+    else:
+        bot.send_message(call.message.chat.id,
+            "❌ 𝗢𝗥𝗢 𝗜𝗡𝗦𝗨𝗙𝗜𝗖𝗜𝗘𝗡𝗧𝗘\n\n"
+            "Necesitas 20 de oro para comprar."
+        )
+
+    mostrar_nuevo_piso(call.message.chat.id, user_id)
+
+@bot.callback_query_handler(func=lambda call: call.data == "volver_batalla")
+def volver_batalla(call):
+    bot.answer_callback_query(call.id)
+    user_id = call.from_user.id
+
+    if user_id not in partidas:
+        return
+
+    mostrar_nuevo_piso(call.message.chat.id, user_id)
 
 # ---------- ACCIONES DE BATALLA ----------
 @bot.callback_query_handler(func=lambda call: call.data.startswith("accion_"))
@@ -415,7 +478,8 @@ def accion_batalla(call):
         f"❤️ 𝗩𝗜𝗗𝗔 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['vida']}\n\n"
         f"❤️ 𝗧𝗨 𝗩𝗜𝗗𝗔: {partida['vida']}\n"
         f"⚔️ 𝗣𝗢𝗗𝗘𝗥 𝗗𝗘 𝗔𝗧𝗔𝗤𝗨𝗘: {partida['arma_daño']}\n"
-        f"💊 𝗧𝗨𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}\n\n"
+        f"💊 𝗧𝗨𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}\n"
+        f"🪙 𝗧𝗨 𝗢𝗥𝗢: {progreso[user_id].get('oro', 0)}\n\n"
         "¿𝗤𝘂𝗲́ 𝗱𝗲𝘀𝗲𝗮𝘀 𝗵𝗮𝗰𝗲𝗿?"
     )
 
@@ -424,7 +488,8 @@ def accion_batalla(call):
         InlineKeyboardButton("⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥", callback_data="accion_atacar"),
         InlineKeyboardButton("🛡️ 𝗗𝗘𝗙𝗘𝗡𝗗𝗘𝗥", callback_data="accion_defender"),
         InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔 - 𝘔𝘢𝘨𝘪𝘤 𝘢𝘵𝘵𝘢𝘤𝘬 %60", callback_data="accion_magia"),
-        InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡", callback_data="accion_pocion")
+        InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡 - 𝘊𝘢𝘳𝘨𝘢𝘳 𝘷𝘪𝘥𝘢 +50", callback_data="accion_pocion"),
+        InlineKeyboardButton("🛒 𝗧𝗜𝗘𝗡𝗗𝗔", callback_data="abrir_tienda")
     )
 
     try:
@@ -456,7 +521,8 @@ def mi_progreso(message):
         f"👤 𝗡𝗢𝗠𝗕𝗥𝗘: {p['nombre']}\n"
         f"🗼 𝗣𝗜𝗦𝗢 𝗠𝗔𝗫𝗜𝗠𝗢: {p.get('piso_maximo', 0)}\n"
         f"🪙 𝗢𝗥𝗢: {p.get('oro', 0)}\n"
-        f"⭐ 𝗘𝗫𝗣𝗘𝗥𝗜𝗘𝗡𝗖𝗜𝗔: {p.get('experiencia', 0)}"
+        f"⭐ 𝗘𝗫𝗣𝗘𝗥𝗜𝗘𝗡𝗖𝗜𝗔: {p.get('experiencia', 0)}\n"
+        f"💊 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {p.get('pociones', 0)}"
     )
 
 # ---------- COMANDO /rank ----------
