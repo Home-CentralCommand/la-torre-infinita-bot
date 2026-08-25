@@ -253,7 +253,6 @@ def iniciar_aventura(call):
     user_id = call.from_user.id
 
     if user_id not in partidas:
-        bot.send_message(call.message.chat.id, "❌ 𝗡𝗢 𝗛𝗔𝗬 𝗣𝗔𝗥𝗧𝗜𝗗𝗔 𝗔𝗖𝗧𝗜𝗩𝗔")
         return
 
     mostrar_nuevo_piso(call.message.chat.id, user_id)
@@ -323,13 +322,11 @@ def accion_batalla(call):
     user_id = call.from_user.id
 
     if user_id not in partidas:
-        bot.send_message(chat_id, "❌ 𝗡𝗢 𝗛𝗔𝗬 𝗣𝗔𝗥𝗧𝗜𝗗𝗔 𝗔𝗖𝗧𝗜𝗩𝗔")
         return
 
     partida = partidas[user_id]
     monstruo = partida.get("monstruo_actual")
     if monstruo is None:
-        bot.send_message(chat_id, "❌ 𝗡𝗢 𝗛𝗔𝗬 𝗣𝗔𝗥𝗧𝗜𝗗𝗔 𝗔𝗖𝗧𝗜𝗩𝗔")
         return
 
     accion = call.data
