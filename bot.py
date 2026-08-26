@@ -392,17 +392,18 @@ def mostrar_nuevo_piso(chat_id, user_id):
     )
 
     texto = (
-        f"🗼 𝗣𝗜𝗦𝗢 {piso} - {monstruo['zona']}\n"
+        f"🗼 <b>Piso {piso}</b> - {monstruo['zona']}\n"
         f"{monstruo['mundo']}\n\n"
         f"{monstruo['descripcion']}\n\n"
-        f"{monstruo['emoji']} 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['nombre']}\n"
-        f"❤️ 𝗩𝗜𝗗𝗔 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['vida']}\n"
-        f"⚔️ 𝗗𝗔Ñ𝗢 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['daño']}\n\n"
-        f"❤️ 𝗧𝗨 𝗩𝗜𝗗𝗔: {partida['vida']}\n"
-        f"⚔️ 𝗣𝗢𝗗𝗘𝗥 𝗗𝗘 𝗔𝗧𝗔𝗤𝗨𝗘: {partida['arma_daño']}\n"
-        f"💊 𝗧𝗨𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}\n"
-        f"🪙 𝗧𝗨 𝗢𝗥𝗢: {progreso[user_id].get('oro', 0)}\n\n"
-        "¿𝗤𝘂𝗲́ 𝗱𝗲𝘀𝗲𝗮𝘀 𝗵𝗮𝗰𝗲𝗿?"
+        f"{monstruo['emoji']} <b>Monstruo:</b> {monstruo['nombre']}\n"
+        f"❤️ <b>Vida del monstruo:</b> {monstruo['vida']}\n"
+        f"⚔️ <b>Daño del monstruo:</b> {monstruo['daño']}\n"
+        f"─────────────────\n"
+        f"❤️ <b>Tu vida:</b> {partida['vida']}\n"
+        f"⚔️ <b>Poder de ataque:</b> {partida['arma_daño']}\n"
+        f"💊 <b>Tus pociones:</b> {partida['pociones']}\n"
+        f"🪙 <b>Tu oro:</b> {progreso[user_id].get('oro', 0)}\n\n"
+        f"<b>¿Qué deseas hacer?</b>"
     )
 
     # Usar caché de imágenes con validación
@@ -428,15 +429,16 @@ def mostrar_nuevo_piso(chat_id, user_id):
                 chat_id,
                 photo=imagenes_cache[imagen_url],
                 caption=texto,
-                reply_markup=markup
+                reply_markup=markup,
+                parse_mode='HTML'
             )
         else:
-            msg = bot.send_message(chat_id, texto, reply_markup=markup)
+            msg = bot.send_message(chat_id, texto, reply_markup=markup, parse_mode='HTML')
         partida["message_id"] = msg.message_id
     except Exception as e:
         logger.error(f"Error enviando mensaje: {e}")
         try:
-            msg = bot.send_message(chat_id, texto, reply_markup=markup)
+            msg = bot.send_message(chat_id, texto, reply_markup=markup, parse_mode='HTML')
             partida["message_id"] = msg.message_id
         except:
             pass
@@ -669,13 +671,15 @@ def accion_batalla(call):
 
         nuevo_texto = (
             f"{resultado}\n\n"
-            f"{monstruo['emoji']} 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['nombre']}\n"
-            f"❤️ 𝗩𝗜𝗗𝗔 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢: {monstruo['vida']}\n\n"
-            f"❤️ 𝗧𝗨 𝗩𝗜𝗗𝗔: {partida['vida']}\n"
-            f"⚔️ 𝗣𝗢𝗗𝗘𝗥 𝗗𝗘 𝗔𝗧𝗔𝗤𝗨𝗘: {partida['arma_daño']}\n"
-            f"💊 𝗧𝗨𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {partida['pociones']}\n"
-            f"🪙 𝗧𝗨 𝗢𝗥𝗢: {progreso[user_id].get('oro', 0)}\n\n"
-            "¿𝗤𝘂𝗲́ 𝗱𝗲𝘀𝗲𝗮𝘀 𝗵𝗮𝗰𝗲𝗿?"
+            f"{monstruo['emoji']} <b>Monstruo:</b> {monstruo['nombre']}\n"
+            f"❤️ <b>Vida del monstruo:</b> {monstruo['vida']}\n"
+            f"⚔️ <b>Daño del monstruo:</b> {monstruo['daño']}\n"
+            f"─────────────────\n"
+            f"❤️ <b>Tu vida:</b> {partida['vida']}\n"
+            f"⚔️ <b>Poder de ataque:</b> {partida['arma_daño']}\n"
+            f"💊 <b>Tus pociones:</b> {partida['pociones']}\n"
+            f"🪙 <b>Tu oro:</b> {progreso[user_id].get('oro', 0)}\n\n"
+            f"<b>¿Qué deseas hacer?</b>"
         )
 
         markup = InlineKeyboardMarkup(row_width=1)
@@ -693,14 +697,15 @@ def accion_batalla(call):
                     chat_id=chat_id,
                     message_id=partida["message_id"],
                     caption=nuevo_texto,
-                    reply_markup=markup
+                    reply_markup=markup,
+                    parse_mode='HTML'
                 )
             else:
-                msg = bot.send_message(chat_id, nuevo_texto, reply_markup=markup)
+                msg = bot.send_message(chat_id, nuevo_texto, reply_markup=markup, parse_mode='HTML')
                 partida["message_id"] = msg.message_id
         except:
             try:
-                msg = bot.send_message(chat_id, nuevo_texto, reply_markup=markup)
+                msg = bot.send_message(chat_id, nuevo_texto, reply_markup=markup, parse_mode='HTML')
                 partida["message_id"] = msg.message_id
             except:
                 pass
