@@ -15,6 +15,7 @@ GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
 REPO = "Home-CentralCommand/la-torre-infinita-bot"
 FILE_PATH_PROGRESS = "progreso.json"
 BASE_URL = "https://raw.githubusercontent.com/Home-CentralCommand/la-torre-infinita-bot/main/monstruos"
+IMAGEN_CAIDO = f"{BASE_URL}/jugador_caido.jpg"
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -616,19 +617,34 @@ def accion_batalla(call):
             progreso[user_id]["piso_maximo"] = max(progreso[user_id].get("piso_maximo", 0), partida["piso"])
             guardar_progreso()
 
+            texto_muerte = (
+                f"💀 <b>HAS CAÍDO EN BATALLA</b>\n\n"
+                f"{monstruo['emoji']} <b>{monstruo['nombre']}</b> te ha derrotado en el piso {partida['piso']}.\n\n"
+                f"⭐ <b>Experiencia ganada:</b> {exp_ganada}\n"
+                f"🪙 <b>Oro acumulado:</b> {progreso[user_id].get('oro', 0)}\n"
+                f"🗼 <b>Piso máximo alcanzado:</b> {progreso[user_id]['piso_maximo']}\n\n"
+                f"La torre te espera de nuevo.\n"
+                f"Escribe /torre para volver a intentarlo.\n\n"
+                f"<i>“No es el fin, solo una pausa en tu leyenda.”</i>"
+            )
+
             try:
-                bot.send_message(chat_id,
-                    "💀 𝗛𝗔𝗦 𝗖𝗔𝗜𝗗𝗢 𝗘𝗡 𝗕𝗔𝗧𝗔𝗟𝗟𝗔\n\n"
-                    f"{monstruo['emoji']} {monstruo['nombre']} te ha derrotado en el piso {partida['piso']}.\n\n"
-                    f"⭐ Experiencia ganada: {exp_ganada}\n"
-                    f"🪙 Oro acumulado: {progreso[user_id].get('oro', 0)}\n"
-                    f"🗼 Piso máximo alcanzado: {progreso[user_id]['piso_maximo']}\n\n"
-                    "La torre te espera de nuevo.\n"
-                    "Escribe /torre para volver a intentarlo.\n\n"
-                    "“No es el fin, solo una pausa en tu leyenda.”"
-                )
+                # Descargar imagen del caído
+                r = requests.get(IMAGEN_CAIDO, timeout=10)
+                if r.status_code == 200:
+                    bot.send_photo(
+                        chat_id,
+                        photo=r.content,
+                        caption=texto_muerte,
+                        parse_mode='HTML'
+                    )
+                else:
+                    bot.send_message(chat_id, texto_muerte, parse_mode='HTML')
             except:
-                pass
+                try:
+                    bot.send_message(chat_id, texto_muerte, parse_mode='HTML')
+                except:
+                    pass
             partidas.pop(user_id, None)
             return
 
