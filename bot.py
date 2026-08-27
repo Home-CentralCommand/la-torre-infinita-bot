@@ -776,6 +776,12 @@ def accion_batalla(call):
             partida["piso"] += 1
             partida["racha"] += 1
             
+            # Bonus de vida: +70 cada 3 monstruos muertos
+            bonus_vida = 0
+            if partida["racha"] % 3 == 0:
+                bonus_vida = 70
+                partida["vida"] = min(partida["vida"] + bonus_vida, partida["vida_maxima"])
+            
             # Vida recuperada escalada con el piso
             vida_recuperada = min(5 + (partida["piso"] // 5) * 3, 10)
             partida["vida"] = min(partida["vida"] + vida_recuperada, partida["vida_maxima"])
@@ -792,6 +798,12 @@ def accion_batalla(call):
             else:
                 texto_racha = ""
 
+            # Texto de bonus de vida
+            if bonus_vida > 0:
+                texto_bonus_vida = f"\n💚 <b>BONUS DE VIDA:</b> +{bonus_vida} (cada 3 monstruos)"
+            else:
+                texto_bonus_vida = ""
+
             try:
                 bot.send_message(chat_id,
                     f"⚔️ <b>VICTORIA</b>\n\n"
@@ -799,7 +811,7 @@ def accion_batalla(call):
                     f"{monstruo['emoji']} <b>{monstruo['nombre']}</b>\n\n"
                     f"🪙 <b>Oro ganado:</b> {oro_ganado}{texto_racha}\n"
                     f"⭐ <b>Experiencia:</b> {xp_ganada}\n"
-                    f"❤️ <b>Vida recuperada:</b> +{vida_recuperada}\n"
+                    f"❤️ <b>Vida recuperada:</b> +{vida_recuperada}{texto_bonus_vida}\n"
                     f"🔥 <b>Racha actual:</b> {partida['racha']}\n\n"
                     f"🗼 <b>Piso alcanzado:</b> {partida['piso']}\n\n"
                     f"⏳ El siguiente monstruo aparecerá en 5 segundos...",
