@@ -268,8 +268,8 @@ def iniciar_torre(message):
         guardar_progreso()
 
     partidas[user_id] = {
-        "vida": 100,
-        "vida_maxima": 100,
+        "vida": 50,
+        "vida_maxima": 50,
         "piso": 1,
         "arma_daño": progreso[user_id].get("arma_daño", 10),
         "pociones": min(progreso[user_id].get("pociones", 1), 3),
@@ -323,7 +323,7 @@ def ver_guia(call):
         "60% de probabilidad de éxito.\n"
         "Solo 1 vez cada 3 turnos.\n\n"
         "💊 𝗣𝗢𝗖𝗜𝗢𝗡\n"
-        "Recupera 50 puntos de vida.\n"
+        "Recupera 25 puntos de vida.\n"
         "Máximo 3 pociones.\n"
         "Solo 1 vez cada 3 turnos.\n"
         "━━━━━━━━━━━━━━━━━━\n"
@@ -402,7 +402,7 @@ def mostrar_nuevo_piso(chat_id, user_id):
         InlineKeyboardButton("⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥", callback_data="accion_atacar"),
         InlineKeyboardButton("💥 𝗖𝗥𝗜𝗧𝗜𝗖𝗔𝗟 𝗔𝗧𝗧𝗔𝗖𝗞", callback_data="accion_defender"),
         InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔 - 𝘔𝘢𝘨𝘪𝘤 𝘢𝘵𝘵𝘢𝘤𝘬 %60", callback_data="accion_magia"),
-        InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡 - 𝘊𝘢𝘳𝘨𝘢𝘳 𝘷𝘪𝘥𝘢 +50", callback_data="accion_pocion"),
+        InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡 - 𝘊𝘢𝘳𝘨𝘢𝘳 𝘷𝘪𝘥𝘢 +25", callback_data="accion_pocion"),
         InlineKeyboardButton("🛒 𝗧𝗜𝗘𝗡𝗗𝗔", callback_data="abrir_tienda")
     )
 
@@ -510,7 +510,7 @@ def abrir_tienda(call):
             bot.send_message(call.message.chat.id,
                 "🛒 𝗧𝗜𝗘𝗡𝗗𝗔 𝗗𝗘 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦\n\n"
                 f"🪙 Tu oro: {progreso[user_id].get('oro', 0)}\n"
-                "💊 Poción de vida +50\n"
+                "💊 Poción de vida +25\n"
                 f"💰 Costo: {precio} de oro\n\n"
                 "⚠️ Precio aumenta con cada poción.\n"
                 "Máximo 3 pociones por partida.",
@@ -703,10 +703,10 @@ def accion_batalla(call):
             else:
                 if partida["pociones"] > 0:
                     partida["pociones"] -= 1
-                    partida["vida"] += 50
+                    partida["vida"] += 25
                     if partida["vida"] > partida["vida_maxima"]:
                         partida["vida"] = partida["vida_maxima"]
-                    resultado = f"💊 <b>POCIÓN USADA</b> - +50 vida ({partida['vida']}/{partida['vida_maxima']})"
+                    resultado = f"💊 <b>POCIÓN USADA</b> - +25 vida ({partida['vida']}/{partida['vida_maxima']})"
                     partida["turnos_sin_pocion"] = 0
                 else:
                     resultado = "❌ <b>NO TIENES POCIONES</b>"
@@ -777,7 +777,7 @@ def accion_batalla(call):
             partida["racha"] += 1
             
             # Vida recuperada escalada con el piso
-            vida_recuperada = min(10 + (partida["piso"] // 5) * 5, 30)
+            vida_recuperada = min(5 + (partida["piso"] // 5) * 3, 10)
             partida["vida"] = min(partida["vida"] + vida_recuperada, partida["vida_maxima"])
             
             progreso[user_id]["piso_actual"] = partida["piso"]
@@ -834,7 +834,7 @@ def accion_batalla(call):
             InlineKeyboardButton("⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥", callback_data="accion_atacar"),
             InlineKeyboardButton("💥 𝗖𝗥𝗜𝗧𝗜𝗖𝗔𝗟 𝗔𝗧𝗧𝗔𝗖𝗞", callback_data="accion_defender"),
             InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔 - 𝘔𝘢𝘨𝘪𝘤 𝘢𝘵𝘵𝘢𝘤𝘬 %60", callback_data="accion_magia"),
-            InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡 - 𝘊𝘢𝘳𝘨𝘢𝘳 𝘷𝘪𝘥𝘢 +50", callback_data="accion_pocion"),
+            InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡 - 𝘊𝘢𝘳𝘨𝘢𝘳 𝘷𝘪𝘥𝘢 +25", callback_data="accion_pocion"),
             InlineKeyboardButton("🛒 𝗧𝗜𝗘𝗡𝗗𝗔", callback_data="abrir_tienda")
         )
 
