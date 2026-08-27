@@ -268,8 +268,8 @@ def iniciar_torre(message):
         guardar_progreso()
 
     partidas[user_id] = {
-        "vida": 50,
-        "vida_maxima": 50,
+        "vida": 200,
+        "vida_maxima": 200,
         "piso": 1,
         "arma_daño": progreso[user_id].get("arma_daño", 10),
         "pociones": min(progreso[user_id].get("pociones", 1), 3),
