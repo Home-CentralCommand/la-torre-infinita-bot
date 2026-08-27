@@ -10,10 +10,10 @@
   },
   "8468237643": {
     "nombre": "\ud835\udde2\ud835\udde6\ud835\uddde\ud835\udde8 - \ud835\udde8\ud835\uddf9\ud835\ude01\ud835\uddff\ud835\uddee \ud835\udddc\ud835\uddfb\ud835\ude00\ud835\ude01\ud835\uddf6\ud835\uddfb\ud835\ude01\ud835\uddfc",
-    "oro": 0,
-    "piso_maximo": 0,
-    "experiencia": 0,
-    "piso_actual": 1,
+    "oro": 40,
+    "piso_maximo": 2,
+    "experiencia": 19,
+    "piso_actual": 2,
     "arma_da\u00f1o": 10,
     "pociones": 1
   }
