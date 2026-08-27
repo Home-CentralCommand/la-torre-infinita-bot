@@ -234,7 +234,6 @@ def start(message):
 def cancelar_partida(message):
     user_id = message.from_user.id
     if user_id in partidas:
-        # Guardar oro acumulado
         oro_ganado = partidas[user_id].get("oro_ganado", 0)
         if oro_ganado > 0:
             progreso[user_id]["oro"] = progreso[user_id].get("oro", 0) + oro_ganado
@@ -260,23 +259,30 @@ def iniciar_torre(message):
             "oro": 0,
             "piso_maximo": 0,
             "experiencia": 0,
+            "nivel": 1,
             "piso_actual": 1,
             "arma_daño": 10,
             "pociones": 1,
+            "mejor_racha": 0,
         }
         guardar_progreso()
 
     partidas[user_id] = {
         "vida": 100,
+        "vida_maxima": 100,
         "piso": 1,
         "arma_daño": progreso[user_id].get("arma_daño", 10),
-        "pociones": progreso[user_id].get("pociones", 1),
+        "pociones": min(progreso[user_id].get("pociones", 1), 3),
         "monstruo_actual": None,
         "message_id": None,
         "oro_ganado": 0,
         "ultimo_acceso": time.time(),
         "procesando": False,
-        "acciones_sin_guardar": 0
+        "acciones_sin_guardar": 0,
+        "racha": 0,
+        "turnos_sin_pocion": 3,
+        "turnos_sin_magia": 3,
+        "compras_en_piso": 0,
     }
 
     markup = InlineKeyboardMarkup(row_width=1)
@@ -307,14 +313,18 @@ def ver_guia(call):
         "📜 𝗚𝗨𝗜𝗔 𝗗𝗘 𝗟𝗔 𝗧𝗢𝗥𝗥𝗘\n"
         "━━━━━━━━━━━━━━━━━━\n"
         "⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥\n"
-        "Daño normal al monstruo.\n\n"
+        "Daño normal al monstruo.\n"
+        "15% de golpe crítico (doble daño).\n\n"
         "🛡️ 𝗗𝗘𝗙𝗘𝗡𝗗𝗘𝗥\n"
-        "Reduce el daño recibido.\n\n"
+        "Reduce el daño recibido a la mitad.\n\n"
         "✨ 𝗠𝗔𝗚𝗜𝗔\n"
         "Daño masivo, pero puede fallar.\n"
-        "60% de probabilidad de éxito.\n\n"
+        "60% de probabilidad de éxito.\n"
+        "Solo 1 vez cada 3 turnos.\n\n"
         "💊 𝗣𝗢𝗖𝗜𝗢𝗡\n"
         "Recupera 50 puntos de vida.\n"
+        "Máximo 3 pociones.\n"
+        "Solo 1 vez cada 3 turnos.\n"
         "━━━━━━━━━━━━━━━━━━\n"
         "🏆 𝗢𝗕𝗝𝗘𝗧𝗜𝗩𝗢\n"
         "Subir lo más alto posible.\n"
@@ -373,6 +383,9 @@ def mostrar_nuevo_piso(chat_id, user_id):
     finally:
         partida["message_id"] = None
 
+    # Resetear compras en piso
+    partida["compras_en_piso"] = 0
+
     # Generar monstruo solo si no hay o está muerto
     if not partida.get("monstruo_actual") or partida["monstruo_actual"]["vida"] <= 0:
         partida["monstruo_actual"] = obtener_monstruo_escalado(partida["piso"])
@@ -400,10 +413,11 @@ def mostrar_nuevo_piso(chat_id, user_id):
         f"❤️ <b>Vida del monstruo:</b> {monstruo['vida']}\n"
         f"⚔️ <b>Daño del monstruo:</b> {monstruo['daño']}\n"
         f"─────────────────\n"
-        f"❤️ <b>Tu vida:</b> {partida['vida']}\n"
+        f"❤️ <b>Tu vida:</b> {partida['vida']}/{partida['vida_maxima']}\n"
         f"⚔️ <b>Poder de ataque:</b> {partida['arma_daño']}\n"
-        f"💊 <b>Tus pociones:</b> {partida['pociones']}\n"
-        f"🪙 <b>Tu oro:</b> {progreso[user_id].get('oro', 0)}\n\n"
+        f"💊 <b>Tus pociones:</b> {partida['pociones']}/3\n"
+        f"🪙 <b>Tu oro:</b> {progreso[user_id].get('oro', 0)}\n"
+        f"🔥 <b>Racha:</b> {partida['racha']}\n\n"
         f"<b>¿Qué deseas hacer?</b>"
     )
 
@@ -413,7 +427,6 @@ def mostrar_nuevo_piso(chat_id, user_id):
             r = requests.get(imagen_url, timeout=10)
             if r.status_code == 200:
                 if len(imagenes_cache) >= MAX_CACHE_SIZE:
-                    # Eliminar entrada más antigua
                     primera_clave = next(iter(imagenes_cache))
                     del imagenes_cache[primera_clave]
                 imagenes_cache[imagen_url] = r.content
@@ -466,21 +479,42 @@ def abrir_tienda(call):
     except:
         pass
 
+    # Precio escalonado
+    pociones_actuales = partidas[user_id]["pociones"]
+    if pociones_actuales >= 3:
+        precio = 999
+    elif pociones_actuales == 2:
+        precio = 80
+    elif pociones_actuales == 1:
+        precio = 40
+    else:
+        precio = 20
+
     markup = InlineKeyboardMarkup(row_width=1)
     markup.add(
-        InlineKeyboardButton("💊 Comprar Poción - 20 oro", callback_data="comprar_pocion"),
+        InlineKeyboardButton(f"💊 Comprar Poción - {precio} oro", callback_data="comprar_pocion"),
         InlineKeyboardButton("⬅️ Volver", callback_data="volver_batalla")
     )
 
     try:
-        bot.send_message(call.message.chat.id,
-            "🛒 𝗧𝗜𝗘𝗡𝗗𝗔 𝗗𝗘 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦\n\n"
-            f"🪙 Tu oro: {progreso[user_id].get('oro', 0)}\n"
-            "💊 Poción de vida +50\n"
-            "💰 Costo: 20 de oro\n\n"
-            "¿Qué deseas hacer?",
-            reply_markup=markup
-        )
+        if pociones_actuales >= 3:
+            bot.send_message(call.message.chat.id,
+                "🛒 𝗧𝗜𝗘𝗡𝗗𝗔 𝗗𝗘 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦\n\n"
+                f"🪙 Tu oro: {progreso[user_id].get('oro', 0)}\n\n"
+                "❌ 𝗧𝗜𝗘𝗡𝗘𝗦 𝗘𝗟 𝗠𝗔𝗫𝗜𝗠𝗢 𝗗𝗘 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦 (3)\n\n"
+                "Usa una poción antes de comprar otra.",
+                reply_markup=markup
+            )
+        else:
+            bot.send_message(call.message.chat.id,
+                "🛒 𝗧𝗜𝗘𝗡𝗗𝗔 𝗗𝗘 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦\n\n"
+                f"🪙 Tu oro: {progreso[user_id].get('oro', 0)}\n"
+                "💊 Poción de vida +50\n"
+                f"💰 Costo: {precio} de oro\n\n"
+                "⚠️ Precio aumenta con cada poción.\n"
+                "Máximo 3 pociones por partida.",
+                reply_markup=markup
+            )
     except:
         pass
 
@@ -495,20 +529,65 @@ def comprar_pocion(call):
     if partidas[user_id].get("procesando"):
         return
 
-    partidas[user_id]["ultimo_acceso"] = time.time()
+    partida = partidas[user_id]
+    partida["ultimo_acceso"] = time.time()
+
+    # Verificar que no haya comprado ya en este piso
+    if partida["compras_en_piso"] >= 1:
+        try:
+            bot.send_message(call.message.chat.id,
+                "❌ 𝗖𝗢𝗠𝗣𝗥𝗔 𝗕𝗟𝗢𝗤𝗨𝗘𝗔𝗗𝗔\n\n"
+                "Solo puedes comprar 1 poción por piso.\n"
+                "Sube de piso para comprar otra."
+            )
+        except:
+            pass
+        try:
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+        except:
+            pass
+        mostrar_nuevo_piso(call.message.chat.id, user_id)
+        return
+
+    pociones_actuales = partida["pociones"]
+    if pociones_actuales >= 3:
+        try:
+            bot.send_message(call.message.chat.id,
+                "❌ 𝗧𝗜𝗘𝗡𝗘𝗦 𝗘𝗟 𝗠𝗔𝗫𝗜𝗠𝗢 𝗗𝗘 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦 (3)\n\n"
+                "Usa una poción antes de comprar otra."
+            )
+        except:
+            pass
+        try:
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+        except:
+            pass
+        mostrar_nuevo_piso(call.message.chat.id, user_id)
+        return
+
+    # Precio escalonado
+    if pociones_actuales == 2:
+        precio = 80
+    elif pociones_actuales == 1:
+        precio = 40
+    else:
+        precio = 20
+
     oro = progreso[user_id].get("oro", 0)
 
-    if oro >= 20:
-        progreso[user_id]["oro"] = oro - 20
-        partidas[user_id]["pociones"] = partidas[user_id].get("pociones", 0) + 1
-        partidas[user_id]["acciones_sin_guardar"] += 1
-        if partidas[user_id]["acciones_sin_guardar"] >= 10:
+    if oro >= precio:
+        progreso[user_id]["oro"] = oro - precio
+        partida["pociones"] += 1
+        partida["compras_en_piso"] = 1
+        partida["acciones_sin_guardar"] += 1
+        if partida["acciones_sin_guardar"] >= 10:
             guardar_progreso()
-            partidas[user_id]["acciones_sin_guardar"] = 0
+            partida["acciones_sin_guardar"] = 0
         try:
             bot.send_message(call.message.chat.id,
                 "✅ 𝗖𝗢𝗠𝗣𝗥𝗔 𝗘𝗫𝗜𝗧𝗢𝗦𝗔\n\n"
-                "💊 Poción agregada a tu inventario.\n"
+                f"💊 Poción comprada por {precio} de oro.\n"
+                f"Tienes {partida['pociones']}/3 pociones.\n"
                 f"🪙 Oro restante: {progreso[user_id]['oro']}"
             )
         except:
@@ -516,13 +595,13 @@ def comprar_pocion(call):
     else:
         try:
             bot.send_message(call.message.chat.id,
-                "❌ 𝗢𝗥𝗢 𝗜𝗡𝗦𝗨𝗙𝗜𝗖𝗜𝗘𝗡𝗧𝗘\n\n"
-                "Necesitas 20 de oro para comprar."
+                f"❌ 𝗢𝗥𝗢 𝗜𝗡𝗦𝗨𝗙𝗜𝗖𝗜𝗘𝗡𝗧𝗘\n\n"
+                f"Necesitas {precio} de oro para comprar.\n"
+                f"Tienes {oro} de oro."
             )
         except:
             pass
 
-    # Borrar mensaje de tienda
     try:
         bot.delete_message(call.message.chat.id, call.message.message_id)
     except:
@@ -540,7 +619,6 @@ def volver_batalla(call):
 
     partidas[user_id]["ultimo_acceso"] = time.time()
 
-    # Borrar mensaje de tienda
     try:
         bot.delete_message(call.message.chat.id, call.message.message_id)
     except:
@@ -574,40 +652,61 @@ def accion_batalla(call):
 
         accion = call.data
         resultado = ""
+        critico = False
+
+        # Incrementar turnos
+        partida["turnos_sin_pocion"] += 1
+        partida["turnos_sin_magia"] += 1
 
         if accion == "accion_atacar":
             daño = partida["arma_daño"]
+            # 15% de crítico
+            if random.random() < 0.15:
+                daño = daño * 2
+                critico = True
             monstruo["vida"] -= daño
             daño_recibido = monstruo["daño"]
             partida["vida"] -= daño_recibido
-            resultado = "⚔️ 𝗔𝗧𝗔𝗖𝗔𝗦𝗧𝗘 𝗔𝗟 𝗠𝗢𝗡𝗦𝗧𝗥𝗨𝗢"
+            if critico:
+                resultado = f"⚡ <b>GOLPE CRÍTICO</b> - Daño doble ({daño})"
+            else:
+                resultado = f"⚔️ <b>ATAQUE</b> - Daño ({daño})"
 
         elif accion == "accion_defender":
             daño_recibido = monstruo["daño"] // 2
             partida["vida"] -= daño_recibido
-            resultado = "🛡️ 𝗧𝗘 𝗗𝗘𝗙𝗘𝗡𝗗𝗜𝗦𝗧𝗘"
+            resultado = f"🛡️ <b>DEFENSA</b> - Daño reducido ({daño_recibido})"
 
         elif accion == "accion_magia":
-            if random.random() < 0.6:
-                daño = partida["arma_daño"] * 3
-                monstruo["vida"] -= daño
-                daño_recibido = monstruo["daño"]
-                partida["vida"] -= daño_recibido
-                resultado = "✨ 𝗟𝗔 𝗠𝗔𝗚𝗜𝗔 𝗙𝗨𝗘 𝗘𝗫𝗜𝗧𝗢𝗦𝗔"
+            if partida["turnos_sin_magia"] < 3:
+                resultado = "⏳ <b>MAGIA EN ENFRIAMIENTO</b>\n\nDebes esperar 3 turnos entre magias."
             else:
-                daño_recibido = monstruo["daño"] * 2
-                partida["vida"] -= daño_recibido
-                resultado = "❌ 𝗟𝗔 𝗠𝗔𝗚𝗜𝗔 𝗙𝗔𝗟𝗟𝗢"
+                if random.random() < 0.6:
+                    daño = partida["arma_daño"] * 3
+                    monstruo["vida"] -= daño
+                    daño_recibido = monstruo["daño"]
+                    partida["vida"] -= daño_recibido
+                    resultado = f"✨ <b>MAGIA EXITOSA</b> - Daño masivo ({daño})"
+                    partida["turnos_sin_magia"] = 0
+                else:
+                    daño_recibido = monstruo["daño"] * 2
+                    partida["vida"] -= daño_recibido
+                    resultado = f"❌ <b>MAGIA FALLÓ</b> - Daño doble recibido ({daño_recibido})"
+                    partida["turnos_sin_magia"] = 0
 
         elif accion == "accion_pocion":
-            if partida["pociones"] > 0:
-                partida["pociones"] -= 1
-                partida["vida"] += 50
-                if partida["vida"] > 100:
-                    partida["vida"] = 100
-                resultado = "💊 𝗥𝗘𝗖𝗨𝗣𝗘𝗥𝗔𝗦𝗧𝗘 𝟱𝟬 𝗗𝗘 𝗩𝗜𝗗𝗔"
+            if partida["turnos_sin_pocion"] < 3:
+                resultado = "⏳ <b>POCIÓN EN ENFRIAMIENTO</b>\n\nDebes esperar 3 turnos entre pociones."
             else:
-                resultado = "❌ 𝗡𝗢 𝗧𝗜𝗘𝗡𝗘𝗦 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦"
+                if partida["pociones"] > 0:
+                    partida["pociones"] -= 1
+                    partida["vida"] += 50
+                    if partida["vida"] > partida["vida_maxima"]:
+                        partida["vida"] = partida["vida_maxima"]
+                    resultado = f"💊 <b>POCIÓN USADA</b> - +50 vida ({partida['vida']}/{partida['vida_maxima']})"
+                    partida["turnos_sin_pocion"] = 0
+                else:
+                    resultado = "❌ <b>NO TIENES POCIONES</b>"
 
         if partida["vida"] <= 0:
             exp_ganada = partida["piso"] * 2
@@ -615,6 +714,11 @@ def accion_batalla(call):
             progreso[user_id]["oro"] = progreso[user_id].get("oro", 0) + partida.get("oro_ganado", 0)
             progreso[user_id]["experiencia"] += exp_ganada
             progreso[user_id]["piso_maximo"] = max(progreso[user_id].get("piso_maximo", 0), partida["piso"])
+            
+            # Guardar mejor racha
+            if partida["racha"] > progreso[user_id].get("mejor_racha", 0):
+                progreso[user_id]["mejor_racha"] = partida["racha"]
+            
             guardar_progreso()
 
             texto_muerte = (
@@ -622,14 +726,14 @@ def accion_batalla(call):
                 f"{monstruo['emoji']} <b>{monstruo['nombre']}</b> te ha derrotado en el piso {partida['piso']}.\n\n"
                 f"⭐ <b>Experiencia ganada:</b> {exp_ganada}\n"
                 f"🪙 <b>Oro acumulado:</b> {progreso[user_id].get('oro', 0)}\n"
-                f"🗼 <b>Piso máximo alcanzado:</b> {progreso[user_id]['piso_maximo']}\n\n"
+                f"🗼 <b>Piso máximo alcanzado:</b> {progreso[user_id]['piso_maximo']}\n"
+                f"🔥 <b>Racha de victorias:</b> {partida['racha']}\n\n"
                 f"La torre te espera de nuevo.\n"
                 f"Escribe /torre para volver a intentarlo.\n\n"
                 f"<i>“No es el fin, solo una pausa en tu leyenda.”</i>"
             )
 
             try:
-                # Descargar imagen del caído
                 r = requests.get(IMAGEN_CAIDO, timeout=10)
                 if r.status_code == 200:
                     bot.send_photo(
@@ -651,11 +755,28 @@ def accion_batalla(call):
         if monstruo["vida"] <= 0:
             oro_ganado = monstruo["oro"]
             xp_ganada = monstruo["xp"]
+            
+            # Bonus por racha en rangos
+            bonus_racha = 0
+            if partida["racha"] >= 10:
+                bonus_racha = 50
+            elif partida["racha"] >= 5:
+                bonus_racha = 25
+            elif partida["racha"] >= 3:
+                bonus_racha = 10
+            
+            oro_ganado += bonus_racha
+            
             partida["oro_ganado"] = partida.get("oro_ganado", 0) + oro_ganado
             progreso[user_id]["oro"] = progreso[user_id].get("oro", 0) + oro_ganado
             progreso[user_id]["experiencia"] += xp_ganada
             partida["piso"] += 1
-            partida["vida"] = min(partida["vida"] + 10, 100)
+            partida["racha"] += 1
+            
+            # Vida recuperada escalada con el piso
+            vida_recuperada = min(10 + (partida["piso"] // 5) * 5, 30)
+            partida["vida"] = min(partida["vida"] + vida_recuperada, partida["vida_maxima"])
+            
             progreso[user_id]["piso_actual"] = partida["piso"]
             partida["monstruo_actual"] = None
             partida["acciones_sin_guardar"] += 1
@@ -663,21 +784,27 @@ def accion_batalla(call):
                 guardar_progreso()
                 partida["acciones_sin_guardar"] = 0
 
+            if bonus_racha > 0:
+                texto_racha = f"\n🔥 <b>BONUS POR RACHA:</b> +{bonus_racha} de oro"
+            else:
+                texto_racha = ""
+
             try:
                 bot.send_message(chat_id,
-                    "⚔️ 𝗩𝗜𝗖𝗧𝗢𝗥𝗜𝗔\n\n"
-                    "Has derrotado a:\n"
-                    f"{monstruo['emoji']} {monstruo['nombre']}.\n\n"
-                    f"🪙 𝗢𝗥𝗢 𝗚𝗔𝗡𝗔𝗗𝗢: {oro_ganado}\n"
-                    f"⭐ 𝗘𝗫𝗣𝗘𝗥𝗜𝗘𝗡𝗖𝗜𝗔: {xp_ganada}\n"
-                    "❤️ 𝗩𝗜𝗗𝗔 𝗥𝗘𝗖𝗨𝗣𝗘𝗥𝗔𝗗𝗔: +10\n\n"
-                    f"🗼 𝗣𝗜𝗦𝗢 𝗔𝗟𝗖𝗔𝗡𝗭𝗔𝗗𝗢: {partida['piso']}\n\n"
-                    "⏳ El siguiente monstruo aparecerá en 5 segundos..."
+                    f"⚔️ <b>VICTORIA</b>\n\n"
+                    f"Has derrotado a:\n"
+                    f"{monstruo['emoji']} <b>{monstruo['nombre']}</b>\n\n"
+                    f"🪙 <b>Oro ganado:</b> {oro_ganado}{texto_racha}\n"
+                    f"⭐ <b>Experiencia:</b> {xp_ganada}\n"
+                    f"❤️ <b>Vida recuperada:</b> +{vida_recuperada}\n"
+                    f"🔥 <b>Racha actual:</b> {partida['racha']}\n\n"
+                    f"🗼 <b>Piso alcanzado:</b> {partida['piso']}\n\n"
+                    f"⏳ El siguiente monstruo aparecerá en 5 segundos...",
+                    parse_mode='HTML'
                 )
             except:
                 pass
 
-            # Timer con verificación de partida activa
             def timer_callback():
                 if user_id in partidas and partidas[user_id].get("piso") == partida["piso"]:
                     mostrar_nuevo_piso(chat_id, user_id)
@@ -691,10 +818,11 @@ def accion_batalla(call):
             f"❤️ <b>Vida del monstruo:</b> {monstruo['vida']}\n"
             f"⚔️ <b>Daño del monstruo:</b> {monstruo['daño']}\n"
             f"─────────────────\n"
-            f"❤️ <b>Tu vida:</b> {partida['vida']}\n"
+            f"❤️ <b>Tu vida:</b> {partida['vida']}/{partida['vida_maxima']}\n"
             f"⚔️ <b>Poder de ataque:</b> {partida['arma_daño']}\n"
-            f"💊 <b>Tus pociones:</b> {partida['pociones']}\n"
-            f"🪙 <b>Tu oro:</b> {progreso[user_id].get('oro', 0)}\n\n"
+            f"💊 <b>Tus pociones:</b> {partida['pociones']}/3\n"
+            f"🪙 <b>Tu oro:</b> {progreso[user_id].get('oro', 0)}\n"
+            f"🔥 <b>Racha:</b> {partida['racha']}\n\n"
             f"<b>¿Qué deseas hacer?</b>"
         )
 
@@ -742,12 +870,14 @@ def mi_progreso(message):
 
     p = progreso[user_id]
     bot.reply_to(message,
-        f"📊 𝗧𝗨 𝗣𝗥𝗢𝗚𝗥𝗘𝗦𝗢\n\n"
-        f"👤 𝗡𝗢𝗠𝗕𝗥𝗘: {p['nombre']}\n"
-        f"🗼 𝗣𝗜𝗦𝗢 𝗠𝗔𝗫𝗜𝗠𝗢: {p.get('piso_maximo', 0)}\n"
-        f"🪙 𝗢𝗥𝗢: {p.get('oro', 0)}\n"
-        f"⭐ 𝗘𝗫𝗣𝗘𝗥𝗜𝗘𝗡𝗖𝗜𝗔: {p.get('experiencia', 0)}\n"
-        f"💊 𝗣𝗢𝗖𝗜𝗢𝗡𝗘𝗦: {p.get('pociones', 0)}"
+        f"📊 <b>𝗧𝗨 𝗣𝗥𝗢𝗚𝗥𝗘𝗦𝗢</b>\n\n"
+        f"👤 <b>Nombre:</b> {p['nombre']}\n"
+        f"🗼 <b>Piso máximo:</b> {p.get('piso_maximo', 0)}\n"
+        f"🪙 <b>Oro:</b> {p.get('oro', 0)}\n"
+        f"⭐ <b>Experiencia:</b> {p.get('experiencia', 0)}\n"
+        f"🔥 <b>Mejor racha:</b> {p.get('mejor_racha', 0)}\n"
+        f"💊 <b>Pociones:</b> {p.get('pociones', 0)}",
+        parse_mode='HTML'
     )
 
 # ---------- COMANDO /rank ----------
@@ -763,11 +893,11 @@ def ranking(message):
 
     ranking = sorted(progreso.items(), key=lambda x: x[1].get("piso_maximo", 0), reverse=True)
 
-    texto = "🏆 𝗥𝗔𝗡𝗞𝗜𝗡𝗚 𝗗𝗘 𝗟𝗔 𝗧𝗢𝗥𝗥𝗘\n\n"
+    texto = "🏆 <b>𝗥𝗔𝗡𝗞𝗜𝗡𝗚 𝗗𝗘 𝗟𝗔 𝗧𝗢𝗥𝗥𝗘</b>\n\n"
     for i, (user_id, datos) in enumerate(ranking[:10], 1):
         texto += f"{i}. {datos['nombre']} - Piso {datos.get('piso_maximo', 0)}\n"
 
-    bot.reply_to(message, texto)
+    bot.reply_to(message, texto, parse_mode='HTML')
 
 # ---------- INICIAR BOT ----------
 def run_bot():
