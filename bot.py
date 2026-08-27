@@ -315,8 +315,9 @@ def ver_guia(call):
         "⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥\n"
         "Daño normal al monstruo.\n"
         "15% de golpe crítico (doble daño).\n\n"
-        "🛡️ 𝗗𝗘𝗙𝗘𝗡𝗗𝗘𝗥\n"
-        "Reduce el daño recibido a la mitad.\n\n"
+        "💥 𝗖𝗥𝗜𝗧𝗜𝗖𝗔𝗟 𝗔𝗧𝗧𝗔𝗖𝗞\n"
+        "Daño aumentado (x1.5).\n"
+        "Recibes daño normal.\n\n"
         "✨ 𝗠𝗔𝗚𝗜𝗔\n"
         "Daño masivo, pero puede fallar.\n"
         "60% de probabilidad de éxito.\n"
@@ -399,7 +400,7 @@ def mostrar_nuevo_piso(chat_id, user_id):
     markup = InlineKeyboardMarkup(row_width=1)
     markup.add(
         InlineKeyboardButton("⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥", callback_data="accion_atacar"),
-        InlineKeyboardButton("🛡️ 𝗗𝗘𝗙𝗘𝗡𝗗𝗘𝗥", callback_data="accion_defender"),
+        InlineKeyboardButton("💥 𝗖𝗥𝗜𝗧𝗜𝗖𝗔𝗟 𝗔𝗧𝗧𝗔𝗖𝗞", callback_data="accion_defender"),
         InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔 - 𝘔𝘢𝘨𝘪𝘤 𝘢𝘵𝘵𝘢𝘤𝘬 %60", callback_data="accion_magia"),
         InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡 - 𝘊𝘢𝘳𝘨𝘢𝘳 𝘷𝘪𝘥𝘢 +50", callback_data="accion_pocion"),
         InlineKeyboardButton("🛒 𝗧𝗜𝗘𝗡𝗗𝗔", callback_data="abrir_tienda")
@@ -673,9 +674,11 @@ def accion_batalla(call):
                 resultado = f"⚔️ <b>ATAQUE</b> - Daño ({daño})"
 
         elif accion == "accion_defender":
-            daño_recibido = monstruo["daño"] // 2
+            daño = int(partida["arma_daño"] * 1.5)
+            monstruo["vida"] -= daño
+            daño_recibido = monstruo["daño"]
             partida["vida"] -= daño_recibido
-            resultado = f"🛡️ <b>DEFENSA</b> - Daño reducido ({daño_recibido})"
+            resultado = f"💥 <b>CRITICAL ATTACK</b> - Daño aumentado ({daño})"
 
         elif accion == "accion_magia":
             if partida["turnos_sin_magia"] < 3:
@@ -829,7 +832,7 @@ def accion_batalla(call):
         markup = InlineKeyboardMarkup(row_width=1)
         markup.add(
             InlineKeyboardButton("⚔️ 𝗔𝗧𝗔𝗖𝗔𝗥", callback_data="accion_atacar"),
-            InlineKeyboardButton("🛡️ 𝗗𝗘𝗙𝗘𝗡𝗗𝗘𝗥", callback_data="accion_defender"),
+            InlineKeyboardButton("💥 𝗖𝗥𝗜𝗧𝗜𝗖𝗔𝗟 𝗔𝗧𝗧𝗔𝗖𝗞", callback_data="accion_defender"),
             InlineKeyboardButton("✨ 𝗠𝗔𝗚𝗜𝗔 - 𝘔𝘢𝘨𝘪𝘤 𝘢𝘵𝘵𝘢𝘤𝘬 %60", callback_data="accion_magia"),
             InlineKeyboardButton("💊 𝗣𝗢𝗖𝗜𝗢𝗡 - 𝘊𝘢𝘳𝘨𝘢𝘳 𝘷𝘪𝘥𝘢 +50", callback_data="accion_pocion"),
             InlineKeyboardButton("🛒 𝗧𝗜𝗘𝗡𝗗𝗔", callback_data="abrir_tienda")
