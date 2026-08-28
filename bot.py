@@ -292,16 +292,20 @@ def iniciar_torre(message):
     )
 
     bot.send_message(chat_id,
-        "🗼 𝗟𝗔 𝗧𝗢𝗥𝗥𝗘 𝗜𝗡𝗙𝗜𝗡𝗜𝗧𝗔\n\n"
-        "⚔️ 𝗥𝗣𝗚 𝗱𝗲 𝗮𝘃𝗲𝗻𝘁𝘂𝗿𝗮 𝗼𝘀𝗰𝘂𝗿𝗮.\n"
-        "Sube pisos, vence monstruos y haz historia.\n\n"
-        "Bienvenido, aventurero.\n\n"
-        "Tu misión es subir pisos venciendo\n"
-        "monstruos que bloquean cada puerta.\n\n"
-        "Cada 5 pisos hay un jefe.\n"
-        "Cada 10 pisos hay un jefe final.\n\n"
-        "Gana oro, experiencia y armas.\n\n"
-        "¿Listo para empezar?",
+        f"🗼 𝗟𝗔 𝗧𝗢𝗥𝗥𝗘 𝗜𝗡𝗙𝗜𝗡𝗜𝗧𝗔\n"
+        f"⚔️ 𝙍𝙋𝙂 𝙙𝙚 𝙖𝙫𝙚𝙣𝙩𝙪𝙧𝙖 𝙤𝙨𝙘𝙪𝙧𝙖\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"𝘽𝙄𝙀𝙉𝙑𝙀𝙉𝙄𝘿𝙊 {message.from_user.first_name}\n\n"
+        f"Tu misión es ascender pisos venciendo monstruos que bloquean cada puerta.\n\n"
+        f"𝗝𝗲𝗳𝗲𝘀:\n"
+        f"• Cada 5 pisos: Jefe Guardián\n"
+        f"• Cada 10 pisos: Jefe Final\n\n"
+        f"𝗥𝗲𝗰𝗼𝗺𝗽𝗲𝗻𝘀𝗮𝘀:\n"
+        f"• 🪙 Oro\n"
+        f"• ⭐ Experiencia\n"
+        f"• 💚 Bonus de vida cada 3 monstruos\n"
+        f"━━━━━━━━━━━━━━━━━━\n\n"
+        f"¿Listo para empezar?",
         reply_markup=markup
     )
 
