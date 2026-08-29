@@ -673,44 +673,44 @@ def accion_batalla(call):
             daño_recibido = monstruo["daño"]
             partida["vida"] -= daño_recibido
             if critico:
-                resultado = f"⚡ <b>GOLPE CRÍTICO</b> - Daño doble ({daño})"
+                resultado = f"⚡ <b>GOLPE CRÍTICO</b>\nHaz hecho daño doble ({daño})"
             else:
-                resultado = f"⚔️ <b>ATAQUE</b> - Daño ({daño})"
+                resultado = f"⚔️ <b>ATAQUE</b>\nDaño normal ({daño})"
 
         elif accion == "accion_defender":
             daño = int(partida["arma_daño"] * 1.5)
             monstruo["vida"] -= daño
             daño_recibido = monstruo["daño"]
             partida["vida"] -= daño_recibido
-            resultado = f"💥 <b>CRITICAL ATTACK</b> - Daño aumentado ({daño})"
+            resultado = f"💥 <b>CRITICAL ATTACK</b>\nDaño aumentado ({daño})"
 
         elif accion == "accion_magia":
             if partida["turnos_sin_magia"] < 3:
-                resultado = "⏳ <b>MAGIA EN ENFRIAMIENTO</b>\n\nDebes esperar 3 turnos entre magias."
+                resultado = "⏳ <b>MAGIA EN ENFRIAMIENTO</b>\nDebes esperar 3 turnos entre magias."
             else:
                 if random.random() < 0.6:
                     daño = partida["arma_daño"] * 3
                     monstruo["vida"] -= daño
                     daño_recibido = monstruo["daño"]
                     partida["vida"] -= daño_recibido
-                    resultado = f"✨ <b>MAGIA EXITOSA</b> - Daño masivo ({daño})"
+                    resultado = f"✨ <b>MAGIA EXITOSA</b>\nDaño Mágico masivo ({daño})"
                     partida["turnos_sin_magia"] = 0
                 else:
                     daño_recibido = monstruo["daño"] * 2
                     partida["vida"] -= daño_recibido
-                    resultado = f"❌ <b>MAGIA FALLÓ</b> - Daño doble recibido ({daño_recibido})"
+                    resultado = f"❌ <b>MAGIA FALLÓ</b>\nDaño doble recibido ({daño_recibido})"
                     partida["turnos_sin_magia"] = 0
 
         elif accion == "accion_pocion":
             if partida["turnos_sin_pocion"] < 3:
-                resultado = "⏳ <b>POCIÓN EN ENFRIAMIENTO</b>\n\nDebes esperar 3 turnos entre pociones."
+                resultado = "⏳ <b>POCIÓN EN ENFRIAMIENTO</b>\nDebes esperar 3 turnos entre pociones."
             else:
                 if partida["pociones"] > 0:
                     partida["pociones"] -= 1
                     partida["vida"] += 25
                     if partida["vida"] > partida["vida_maxima"]:
                         partida["vida"] = partida["vida_maxima"]
-                    resultado = f"💊 <b>POCIÓN USADA</b> - +25 vida ({partida['vida']}/{partida['vida_maxima']})"
+                    resultado = f"💊 <b>POCIÓN USADA</b>\n+25 vida ({partida['vida']}/{partida['vida_maxima']})"
                     partida["turnos_sin_pocion"] = 0
                 else:
                     resultado = "❌ <b>NO TIENES POCIONES</b>"
